@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QFormLayout, QVBoxLayout, \
     QGridLayout, QStackedWidget
 
@@ -8,6 +9,7 @@ from account.view.user.homepage import UserHomePage
 class ForgotPasswordStep(QWidget):
     def __init__(self, login_window):
         super().__init__()
+
 
         # Reference to the LoginWindow
         self.login_window = login_window
@@ -84,16 +86,13 @@ class LoginWindow(QWidget):
         form_layout.addRow(self.login_button)
         form_layout.addRow(self.signup_button)
 
-        # Set up grid layout to center the form
-        grid_layout = QGridLayout()
-        grid_layout.addLayout(form_layout, 1, 1)
 
         # Set up stacked widget for login steps
         self.stacked_widget = QStackedWidget(self)
 
         # Step 0: Login
         login_step = QWidget(self)
-        login_step.setLayout(grid_layout)  # Set the layout for login_step
+        login_step.setLayout(form_layout)  # Set the layout for login_step
         self.stacked_widget.addWidget(login_step)
 
         # Step 1: Forgot Password
@@ -111,7 +110,8 @@ class LoginWindow(QWidget):
         # Set up main layout
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.stacked_widget)  # Add the stacked widget to the main layout
-        main_layout.addStretch(1)  # Add stretch to center the form vertically
+        main_layout.setAlignment(self.stacked_widget,Qt.AlignBaseline)
+
 
         # Set the layout for the main window
         self.setLayout(main_layout)

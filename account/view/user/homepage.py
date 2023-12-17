@@ -14,7 +14,7 @@ class UserHomePage(QWidget):
         # this instance is need to log out
         self.login_window = login_window
         self.init_ui()
-        self.set_username(UserProfileModel().username)
+        self.set_username(UserProfileModel().get_username())
 
     def init_ui(self):
         # Create tabs

@@ -16,7 +16,6 @@ class UserProfile(QWidget):
         self.name_input = QLineEdit()
         self.first_name_input = QLineEdit()
         self.sex_combobox = QComboBox()
-        self.sex_combobox.addItems(["M", "F"])
         self.telephone_input = QLineEdit()
         self.address_input = QTextEdit()
         self.nif_cin_input = QLineEdit()
@@ -59,12 +58,20 @@ class UserProfile(QWidget):
 
     def update_values(self):
         upm = UserProfileModel()
-        self.username_input.setText(upm.username)
-        self.name_input.setText(upm.name)
-        self.first_name_input.setText(upm.first_name)
-        self.sex_combobox = QComboBox()
+        upm.retrieve_data()
+        self.username_input.setText(upm.get_username())
+        self.name_input.setText(upm.get_name())
+        self.first_name_input.setText(upm.get_first_name())
+
         self.sex_combobox.addItems(["M", "F"])
-        # self.sex_combobox...select the value
-        self.telephone_input.setText(upm.telephone)
-        self.address_input.setText(upm.adress)
-        self.nif_cin_input.setText(upm.nif_cin)
+
+        # Automatically select the value in the QComboBox that matches the sex from UserProfileModel
+        current_sex = upm.get_sex()
+        if current_sex in ["M", "F"]:
+            index = self.sex_combobox.findText(current_sex)
+            if index != -1:
+                self.sex_combobox.setCurrentIndex(index)
+
+        self.telephone_input.setText(upm.get_telephone())
+        self.address_input.setText(upm.get_address())
+        self.nif_cin_input.setText(upm.get_nif_cin())
