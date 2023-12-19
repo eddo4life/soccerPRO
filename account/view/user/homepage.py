@@ -5,26 +5,24 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLa
     QGridLayout
 
 from account.model.userprofilemodel import UserProfileModel
+from account.view.user.event import Event
+from account.view.user.history import HistoryTabs
 from account.view.user.profile.userprofile import UserProfile
 
 
 class UserHomePage(QWidget):
     def __init__(self, login_window=None):
         super().__init__()
-        # this instance is need to log out
+        # this instance is required to log out
         self.login_window = login_window
         self.init_ui()
         self.set_username(UserProfileModel().get_username())
 
     def init_ui(self):
-        # Create tabs
-        event_tab = QWidget()
-        historic_tab = QWidget()
-
         # Create the event tab
         tab_widget = QTabWidget()
-        tab_widget.addTab(event_tab, "Events")
-        tab_widget.addTab(historic_tab, "History")
+        tab_widget.addTab(Event(), "Events")
+        tab_widget.addTab(HistoryTabs(), "Tickets")
 
         # Main vertical layout
         main_layout = QVBoxLayout()
@@ -41,8 +39,6 @@ class UserHomePage(QWidget):
         grid_layout = QGridLayout()
         grid_layout.addWidget(self.stacked_widget)
         self.setLayout(grid_layout)
-        self.setGeometry(100, 100, 600, 400)
-        self.setWindowTitle("PyQt Application")
 
     def header(self):
         # Create components

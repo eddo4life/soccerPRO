@@ -16,9 +16,7 @@ class DatabaseConnector:
             password=self.password,
             database=self.database
         )
-        if self.__connection.is_connected():
-            print("Connected to MySQL database!")
-        else:
+        if not self.__connection.is_connected():
             print('connection failed')
 
     def get_con(self):
@@ -27,12 +25,3 @@ class DatabaseConnector:
     def disconnect(self):
         if self.__connection.is_connected():
             self.__connection.close()
-            print("Disconnected from MySQL database.")
-
-
-# Example usage:
-if __name__ == "__main__":
-    db_connector = DatabaseConnector()
-    db_connector.connect()
-    # Perform database operations
-    db_connector.disconnect()

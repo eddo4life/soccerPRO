@@ -98,10 +98,22 @@ class UserProfileModel:
             self.set_telephone(result[5])
             self.set_nif_cin(result[6])
             self.set_password(result[8])
-
-            # Now you can use the values in the upm instance
-            print(self.get_username())
-            print(self.get_name())
-            # ... and so on
         else:
             print("No data found for the given telephone number.")
+
+    def get_all(self):
+        conn = DatabaseConnector()
+        conn.connect()
+        self.datas = []
+        try:
+            with conn.get_con().cursor() as cursor:
+                query = "SELECT code,username,nom,prenom,sexe,telephone,adresse,solde,etat FROM parieur"
+                cursor.execute(query)
+                self.datas.extend(cursor.fetchall())
+        except Exception as e:
+            print(f'Exception: {e}')
+
+        finally:
+            if conn:
+                conn.get_con().close()
+        return self.datas
