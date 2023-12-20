@@ -1,12 +1,24 @@
+from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtWidgets import QPushButton, QLineEdit
-from PyQt5.QtWidgets import QWidget, QCheckBox, QLabel, QVBoxLayout, QScrollArea, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QCheckBox, QLabel, QVBoxLayout, QHBoxLayout
 
 from account.view.user.basewidget import BaseWidget
 
 
+def unselect_checkbox(widget, target_text='placer'):
+    layout = widget.layout()
+    for i in range(layout.count()):
+        try:
+            item = layout.itemAt(i)
+            if isinstance(item.widget(), QCheckBox) and item.widget().text().lower() == target_text.lower():
+                item.widget().setChecked(False)
+        except Exception as e:
+            print(f"An exception occurred: {str(e)}")
+
+
 class Event(BaseWidget):
     def __init__(self):
-        super().__init__(QVBoxLayout())
+        super().__init__()
 
         dct = {
             'home-team': 'Barcelona',
@@ -18,37 +30,31 @@ class Event(BaseWidget):
             'score 2': '0'
         }
 
-        for i in range(100):
+        for i in range(1000):
             self.add_widget(self.card(dct))
 
-        # scroll area for events
-        scroll_area_event = QScrollArea()
-        scroll_area_event.setWidgetResizable(True)
-
-        scroll_widget_event = QWidget()
-        scroll_widget_event.setLayout(self.layout)
-
-        scroll_area_event.setWidget(scroll_widget_event)
-
-        # create instance for ticket
-        self.ticket = Ticket()
-
-        # scroll area for ticket
-        scroll_area_ticket = QScrollArea()
-        scroll_area_ticket.setWidgetResizable(True)
-
-        scroll_widget_ticket = QWidget()
-        scroll_widget_ticket.setLayout(self.ticket.layout)
-
-        scroll_area_ticket.setWidget(scroll_widget_ticket)
         # add both event and ticket horizontally to the main layout
+
         main_layout = QHBoxLayout(self)
-        main_layout.addWidget(scroll_area_event)
-        main_layout.addWidget(scroll_area_ticket)
-        main_layout.setStretchFactor(scroll_area_event, 2)  # give more space to the events
+        main_layout.addWidget(self.scroll_area)
+
+        main_layout.setStretchFactor(self.scroll_area, 2)  # give more space to the events
+
+        # manage ticket class
+
+        self.ticket = Ticket()
+        # add action for clearing the ticket
+        self.ticket.clear_btn.clicked.connect(self.clear_ticket)
 
         # create a main layout for tickets
-        main_layout.setStretchFactor(scroll_area_ticket, 1)
+        main_layout_ticket = QVBoxLayout()
+        main_layout_ticket.addWidget(self.ticket.scroll_area)
+        main_layout_ticket.addLayout(self.ticket.add_buttons())
+        # create a main widget for tickets
+        ticket_widgets = QWidget()
+        ticket_widgets.setLayout(main_layout_ticket)
+        main_layout.addWidget(ticket_widgets)
+        main_layout.setStretchFactor(ticket_widgets, 1)
 
         self.setLayout(main_layout)
 
@@ -79,24 +85,37 @@ class Event(BaseWidget):
             self.ticket.remove_widget(card)  # remove from the ticket list
             self.add_widget(card)  # add to the event list
 
+    def clear_ticket(self):
+        # Remove and delete all items from the layout
+        layout = self.ticket.layout
+        while layout.count():
+            widget = layout.takeAt(0).widget()
+            if widget is not None:
+                # search for the checkbox and unselect it
+                unselect_checkbox(widget)
+                self.add_widget(widget)
+
 
 class Ticket(BaseWidget):
     def __init__(self):
-        super().__init__(QVBoxLayout())
-
+        super().__init__()
+        self.clear_btn = QPushButton('clear')
 
     def add_buttons(self):
-        clear_btn = QPushButton('clear')
         sold_input = QLineEdit()
+        validator = QDoubleValidator()
+        sold_input.setValidator(validator)
         sold_input.setPlaceholderText('sold')
         validate_btn = QPushButton('validate')
-
+        # add components to the layout
         hbox = QHBoxLayout()
-        hbox.addWidget(clear_btn)
+        hbox.addWidget(self.clear_btn)
         hbox.addWidget(sold_input)
         hbox.addWidget(validate_btn)
+        # add actions
+        validate_btn.clicked.connect(self.validate)
 
         return hbox
 
-    def clear_ticket(self):
-        self.clear_layout()
+    def validate(self):
+        print('validating')

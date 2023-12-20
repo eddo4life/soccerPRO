@@ -1,16 +1,25 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout
 
 
 class BaseWidget(QWidget):
-    def __init__(self, layout):
+    def __init__(self):
         super().__init__()
-        self.layout = layout
+        self.layout = QVBoxLayout()
+
+        # scroll area
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+
+        scroll_widget = QWidget()
+        scroll_widget.setLayout(self.layout)
+
+        self.scroll_area.setWidget(scroll_widget)
 
     def add_widget(self, widget):
         if self.layout.count() % 2 == 0:
-            widget.setStyleSheet('background-color:rgb(250,250,250)')
+            widget.setStyleSheet('background-color:rgb(253,253,253)')
         else:
-            widget.setStyleSheet('background-color:rgb(240,240,240)')
+            widget.setStyleSheet('background-color:rgb(247,247,247)')
         self.layout.addWidget(widget)
 
     def remove_widget(self, widget):
@@ -31,6 +40,6 @@ class BaseWidget(QWidget):
             self.add_widget(widget)
 
     def clear_layout(self):
-        # Remove all items from the layout
+        # Remove and delete all items from the layout
         while self.layout.count():
             self.layout.takeAt(0)

@@ -100,7 +100,7 @@ class LoginWindow(QWidget):
         self.init_ui()
         # Set window properties
         self.setWindowTitle('Login Window')
-        self.setGeometry(0, 0, 1000, 400)
+        self.setGeometry(0, 0, 1200, 600)
         self.center()
 
     def center(self):
