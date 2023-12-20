@@ -1,8 +1,18 @@
-import sys
-
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QComboBox, \
-    QStackedWidget, QTreeWidget, QTreeWidgetItem, QTextEdit
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QComboBox, \
+    QStackedWidget, QTreeWidget, QTreeWidgetItem, QTextEdit, QHBoxLayout
+
+
+def get_centered_layout(layout, w=500, h=250):
+    layout.setSpacing(20)
+    container_widget = QWidget()
+    # container_widget.setStyleSheet("background-color: rgb(250,250,250);")
+    container_widget.setLayout(layout)
+    container_widget.setFixedSize(w, h)
+    # Centered Layout
+    center_layout = QHBoxLayout()
+    center_layout.addWidget(container_widget, alignment=Qt.AlignmentFlag.AlignCenter)
+    return center_layout
 
 
 class SignUpForm(QWidget):
@@ -16,7 +26,7 @@ class SignUpForm(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.layout = QVBoxLayout(self)
+        self.layout = QVBoxLayout()
         # Create a tree widget for the progress indicator
         self.tree_widget = QTreeWidget(self)
         self.tree_widget.setHeaderHidden(True)
@@ -76,8 +86,8 @@ class SignUpForm(QWidget):
         self.stacked_widget.addWidget(step3_widget)
 
         # Navigation buttons
-        self.next_button = QPushButton("Next", self)
         self.prev_button = QPushButton("Previous", self)
+        self.next_button = QPushButton("Next", self)
         self.back_button = QPushButton("Back", self)
 
         self.next_button.clicked.connect(self.next_step)
@@ -86,12 +96,16 @@ class SignUpForm(QWidget):
 
         self.layout.addWidget(self.tree_widget)
         self.layout.addWidget(self.stacked_widget)
-        self.layout.addWidget(self.next_button)
-        self.layout.addWidget(self.prev_button)
-        self.layout.addWidget(self.back_button)
-
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.prev_button)
+        hbox.addWidget(self.next_button)
+        hbox.addWidget(self.back_button)
+        self.layout.addLayout(hbox)
         self.current_step = 0
         self.update_tree()
+        #     set the layout
+        self.setLayout(
+            get_centered_layout(self.layout, 1000, 700))  # rewrite the get_centered_layout to avoid circular import
 
     def update_tree(self):
         for i, item in enumerate(self.tree_items):
@@ -129,10 +143,3 @@ class SignUpForm(QWidget):
         # nif_cin = self.nif_cin_input.text()
         # username = self.username_input.text()
         # password = self.password_input.text()
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = SignUpForm()
-    window.show()
-    sys.exit(app.exec_())

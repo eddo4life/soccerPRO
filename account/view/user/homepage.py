@@ -43,8 +43,9 @@ class UserHomePage(QWidget):
     def header(self):
         # Create components
         profile_icon = QLabel()
-        profile_icon.setPixmap(QIcon("user.png").pixmap(50, 50))
+        profile_icon.setPixmap(QIcon("icon/user.png").pixmap(50, 50))
         self.username_label = QLabel()
+        profile_icon.linkActivated.connect(self.open_profile)
         self.username_label.linkActivated.connect(self.open_profile)
         balance_label = QLabel("Balance: $100")
 

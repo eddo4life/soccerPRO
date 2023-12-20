@@ -7,6 +7,18 @@ from account.view.auth.signup import SignUpForm
 from account.view.user.homepage import UserHomePage
 
 
+def get_centered_layout(layout, w=500, h=250):
+    layout.setSpacing(20)
+    container_widget = QWidget()
+    # container_widget.setStyleSheet("background-color: rgb(250,250,250);")
+    container_widget.setLayout(layout)
+    container_widget.setFixedSize(w, h)
+    # Centered Layout
+    center_layout = QHBoxLayout()
+    center_layout.addWidget(container_widget, alignment=Qt.AlignmentFlag.AlignCenter)
+    return center_layout
+
+
 class AdminDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -86,7 +98,7 @@ class ForgotPasswordStep(QWidget):
         form_layout.addRow(self.back_button)  # Add the back button
 
         # Set the layout for the Forgot Password step
-        self.setLayout(form_layout)
+        self.setLayout(get_centered_layout(form_layout, 700, 300))
 
     def show_previous_login_step(self):
         # Switch to the previous login step in the LoginWindow
@@ -133,26 +145,23 @@ class LoginWindow(QWidget):
         form_layout.addRow(self.forgot_password_label, self.admin_connect_label)
         form_layout.addRow(self.login_button)
         form_layout.addRow(self.signup_button)
-        form_layout.setSpacing(20)
 
         # Centered Container Widget
-        container_widget = QWidget()
-        container_widget.setStyleSheet("background-color: rgb(245,245,245);")
-        container_widget.setLayout(form_layout)
-        container_widget.setFixedSize(500, 250)
+        # container_widget = QWidget()
+        # container_widget.setStyleSheet("background-color: rgb(245,245,245);")
+        # container_widget.setLayout(form_layout)
+        # container_widget.setFixedSize(500, 250)
 
-
-
-        # Centered Layout
-        center_layout = QHBoxLayout()
-        center_layout.addWidget(container_widget, alignment=Qt.AlignmentFlag.AlignCenter)
+        # # Centered Layout
+        # center_layout = QHBoxLayout()
+        # center_layout.addWidget(container_widget, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # Set up stacked widget for login steps
         self.stacked_widget = QStackedWidget(self)
 
         # Step 0: Login
         login_step = QWidget(self)
-        login_step.setLayout(center_layout)  # Set the layout for login_step
+        login_step.setLayout(get_centered_layout(form_layout))  # Set the layout for login_step
 
         # Set a fixed size for the login widget
         # login_step.setFixedSize(300, 200)  # Adjust the size as needed

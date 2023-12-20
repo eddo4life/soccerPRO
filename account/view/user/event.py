@@ -30,7 +30,7 @@ class Event(BaseWidget):
             'score 2': '0'
         }
 
-        for i in range(1000):
+        for i in range(500):
             self.add_widget(self.card(dct))
 
         # add both event and ticket horizontally to the main layout
