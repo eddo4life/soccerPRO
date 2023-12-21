@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QFormLayout, QLineEdit, QComboBox, QTextEdit, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QFormLayout, QLineEdit, QComboBox, QTextEdit, QHBoxLayout, QPushButton, QLabel
 
 from account.model.userprofilemodel import UserProfileModel
 
@@ -11,7 +11,15 @@ class UserProfile(QWidget):
         self.update_values()
 
     def profile(self):
-        form = QFormLayout(self)
+        form = QFormLayout()
+        form.setSpacing(10)
+        main_layout = QHBoxLayout(self)
+        main_layout.addLayout(form)
+        profile_label=QLabel('')
+        main_layout.addWidget(profile_label)
+        main_layout.setStretchFactor(form,2)
+        main_layout.setStretchFactor(profile_label, 1)
+
         self.username_input = QLineEdit()
         self.name_input = QLineEdit()
         self.first_name_input = QLineEdit()

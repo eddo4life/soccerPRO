@@ -36,6 +36,8 @@ class Reload(QWidget):
         self.form.addRow("", self.bt_reload)
 
         self.hbLayout.addLayout(self.form)
+        self.hbLayout.setStretchFactor(self.form,1)
+
 
     def tableview(self):
 
@@ -51,6 +53,7 @@ class Reload(QWidget):
         self.table.setHorizontalHeaderLabels(header)
         # ajouter le tableau dans le hbLayout
         self.hbLayout.addWidget(self.table)
+        self.hbLayout.setStretchFactor(self.table, 3)
 
     def handle_table_click(self, item):
         selected_row = item.row()
@@ -62,7 +65,6 @@ class Reload(QWidget):
                 self.txt_id.setText(code.text())
                 self.txt_nom.setText(name.text())
                 self.txt_prenom.setText(first_name.text())
-
 
     def load(self):
         data = UserProfileModel().get_all()
@@ -77,7 +79,3 @@ class Reload(QWidget):
 
     def reload(self):
         print('reloading')
-
-
-
-

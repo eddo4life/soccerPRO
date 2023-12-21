@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QLabel, QPushButton, QTabW
 
 from account.view.admin.match import Matches
 from account.view.admin.rechargement import Reload
+from labs.lab import Lab
 
 
 class AdminHomePage(QMainWindow):
@@ -36,6 +37,17 @@ class AdminHomePage(QMainWindow):
         self.disconnect_button = QPushButton("Disconnect", self)
         self.disconnect_button.clicked.connect(self.disconnect)
         self.layout.addWidget(self.disconnect_button)  # Bottom-right alignment
+        Lab.set_size_policy_fixed(self.disconnect_button)
+        self.disconnect_button.setStyleSheet(
+            '''
+            QPushButton:hover {
+                color: red;
+            }
+             QPushButton {
+                border: none; 
+            }
+            '''
+        )
 
 
     def disconnect(self):

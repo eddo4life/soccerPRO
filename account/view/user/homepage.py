@@ -1,7 +1,5 @@
-import sys
-
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QStackedWidget, \
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QStackedWidget, \
     QGridLayout
 
 from account.model.userprofilemodel import UserProfileModel
@@ -74,10 +72,3 @@ class UserHomePage(QWidget):
 
     def initialize(self):
         self.stacked_widget.setCurrentIndex(0)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = UserHomePage()
-    window.show()
-    sys.exit(app.exec_())

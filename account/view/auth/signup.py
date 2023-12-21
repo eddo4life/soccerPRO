@@ -88,18 +88,25 @@ class SignUpForm(QWidget):
         # Navigation buttons
         self.prev_button = QPushButton("Previous", self)
         self.next_button = QPushButton("Next", self)
-        self.back_button = QPushButton("Back", self)
+        self.cancel_button = QPushButton("Cancel", self)
+        self.cancel_button.setStyleSheet(
+            '''
+            QPushButton:hover {
+                color: red;
+            }
+            '''
+        )
 
         self.next_button.clicked.connect(self.next_step)
         self.prev_button.clicked.connect(self.prev_step)
-        self.back_button.clicked.connect(self.back_to_login)
+        self.cancel_button.clicked.connect(self.back_to_login)
 
         self.layout.addWidget(self.tree_widget)
         self.layout.addWidget(self.stacked_widget)
         hbox = QHBoxLayout()
         hbox.addWidget(self.prev_button)
         hbox.addWidget(self.next_button)
-        hbox.addWidget(self.back_button)
+        hbox.addWidget(self.cancel_button)
         self.layout.addLayout(hbox)
         self.current_step = 0
         self.update_tree()
