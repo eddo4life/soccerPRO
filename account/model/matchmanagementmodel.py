@@ -17,9 +17,6 @@ class MatchManagementModel:
     def save(self):
         print("Saving")
         print(self.__str__())
-        self.enregistrer()
-
-    def enregistrer(self):
         conn = DatabaseConnector()
         conn.connect()
         cursor = conn.get_con().cursor(prepared=True)

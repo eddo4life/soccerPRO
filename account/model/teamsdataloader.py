@@ -26,7 +26,7 @@ class TeamsDataLoader:
         except FileNotFoundError:
             print(f"Error: File '{file_path}' not found.")
         except json.JSONDecodeError:
-            print(f"Error: Unable to decode JSON from '{file_path}'. Ensure it is a valid JSON file.")
+            print(f"Error: Unable to decode JSON from '{file_path}'.")
         except Exception as e:
             print(f"Error: An unexpected error occurred while loading data from '{file_path}': {e}")
 

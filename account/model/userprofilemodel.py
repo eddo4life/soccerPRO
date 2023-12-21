@@ -104,16 +104,16 @@ class UserProfileModel:
     def get_all(self):
         conn = DatabaseConnector()
         conn.connect()
-        self.datas = []
+        datas = []
         try:
             with conn.get_con().cursor() as cursor:
                 query = "SELECT code,username,nom,prenom,sexe,telephone,adresse,solde,etat FROM parieur"
                 cursor.execute(query)
-                self.datas.extend(cursor.fetchall())
+                datas.extend(cursor.fetchall())
         except Exception as e:
             print(f'Exception: {e}')
 
         finally:
             if conn:
                 conn.get_con().close()
-        return self.datas
+        return datas
