@@ -23,7 +23,6 @@ class TeamsDataLoader:
         try:
             with open(file_path, "r", encoding="utf-8") as file:
                 football_teams_dict = json.load(file)
-                print(f"Successfully loaded data from {file_path}")
         except FileNotFoundError:
             print(f"Error: File '{file_path}' not found.")
         except json.JSONDecodeError:

@@ -2,6 +2,7 @@ from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtWidgets import QPushButton, QLineEdit
 from PyQt5.QtWidgets import QWidget, QCheckBox, QLabel, QVBoxLayout, QHBoxLayout
 
+from account.model.usereventmodel import UserEventModel
 from account.view.user.basewidget import BaseWidget
 
 
@@ -20,18 +21,8 @@ class Event(BaseWidget):
     def __init__(self):
         super().__init__()
 
-        dct = {
-            'home-team': 'Barcelona',
-            'away-team': 'Real Madrid',
-            'time': '12:30',
-            'country': 'Spain',
-            'championship': 'LaLiga',
-            'score 1': '0',
-            'score 2': '0'
-        }
-
-        for i in range(500):
-            self.add_widget(self.card(dct))
+        for d in UserEventModel.load():
+            self.add_widget(self.card(d))
 
         # add both event and ticket horizontally to the main layout
 
@@ -61,9 +52,9 @@ class Event(BaseWidget):
     def card(self, dic):
         wdg = QWidget()
         wdg.setFixedHeight(150)
-        top = dic['home-team'] + " - " + dic['away-team'] + "(" + dic['time'] + ")"
-        middle = dic['country'] + " - " + dic['championship']
-        bottom = dic['score 1'] + " - " + dic['score 2']
+        top = dic['equipe_receveuse'] + " - " + dic['equipe_visiteuse'] + "(" + dic['heure_match'] + ")"
+        middle = dic['pays'] + " - " + dic['type_de_match']
+        bottom = dic['score_final'] + " - " + dic['score_final']
         vbox = QVBoxLayout()
         vbox.addWidget(QLabel(top))
         vbox.addWidget(QLabel(middle))
@@ -114,7 +105,6 @@ class Ticket(BaseWidget):
         hbox.addWidget(validate_btn)
         # add actions
         validate_btn.clicked.connect(self.validate)
-
         return hbox
 
     def validate(self):

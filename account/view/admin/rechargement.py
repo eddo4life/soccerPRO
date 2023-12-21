@@ -36,8 +36,7 @@ class Reload(QWidget):
         self.form.addRow("", self.bt_reload)
 
         self.hbLayout.addLayout(self.form)
-        self.hbLayout.setStretchFactor(self.form,1)
-
+        self.hbLayout.setStretchFactor(self.form, 1)
 
     def tableview(self):
 
