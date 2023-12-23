@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSizePolicy
 
 
@@ -33,6 +34,10 @@ class Lab:
 
     #     Front-end section
     @staticmethod
-    def set_size_policy_fixed( widget):
+    def set_size_policy_fixed(widget):
         size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         widget.setSizePolicy(size_policy)
+
+    @staticmethod
+    def get_icon(name):
+        return QIcon("icon/" + name)

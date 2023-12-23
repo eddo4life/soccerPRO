@@ -15,8 +15,6 @@ class MatchManagementModel:
         self.__etat = etat
 
     def save(self):
-        print("Saving")
-        print(self.__str__())
         conn = DatabaseConnector()
         conn.connect()
         cursor = conn.get_con().cursor(prepared=True)
@@ -94,9 +92,3 @@ class MatchManagementModel:
 
     def set_etat(self, etat):
         self.__etat = etat
-
-    def __str__(self):
-        return f"Match(type_de_match={self.__type_de_match}, pays={self.__pays}, date_match={self.__date_match}, " \
-               f"heure_match={self.__heure_match}, equipe_visiteuse={self.__equipe_visiteuse}, " \
-               f"equipe_receveuse={self.__equipe_receveuse}, cote={self.__cote}, score_final={self.__score_final}, " \
-               f"etat={self.__etat})"

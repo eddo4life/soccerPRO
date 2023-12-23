@@ -1,19 +1,22 @@
-from PyQt5.QtWidgets import QLabel, QTabWidget
+from PyQt5.QtWidgets import QTabWidget
+
+from account.view.user.card import Card
+from labs.lab import Lab
 
 
 class HistoryTabs(QTabWidget):
     def __init__(self):
         super().__init__()
-        tw = QTabWidget()
-        self.addTab(self.pending(), 'in progress')
-        self.addTab(self.win(), 'won')
-        self.addTab(self.lose(), 'Lost')
+        self.addTab(self.pending(), Lab.get_icon('wait.png'), 'in progress')
+        self.addTab(self.won(), Lab.get_icon('won.png'), 'won')
+
+        self.addTab(self.lost(), Lab.get_icon('lose.png'), 'Lost')
 
     def pending(self):
-        return QLabel('pending')
+        return Card('pending')
 
-    def win(self):
-        return QLabel('won')
+    def won(self):
+        return Card('won')
 
-    def lose(self):
-        return QLabel('Lost')
+    def lost(self):
+        return Card('lost')

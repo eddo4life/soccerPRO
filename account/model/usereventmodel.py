@@ -2,14 +2,57 @@ from database.connection import DatabaseConnector
 
 
 class UserEventModel:
+
     @staticmethod
-    def load():
+    def load_data_for(status):
+        if status == 'pending':
+            return UserEventModel.load_pending_events()
+        elif status == 'won':
+            return UserEventModel.load_won_events()
+        elif status == 'lost':
+            return UserEventModel.load_lost_events()
+
+    @staticmethod
+    def load_pending_events():
+        # encours ou non encore joue
+        query = """
+                    SELECT * FROM pariage JOIN matches ON pariage.id_match = matches.id WHERE matches.etat = 'e' or matches.etat = 'n';
+                    """
+
+        return UserEventModel.load(query)
+
+    @staticmethod
+    def load_won_events():
+        # encours ou non encore joue
+        query = """
+                        SELECT * FROM pariage 
+                                 JOIN matches ON pariage.id_match = matches.id 
+                                          WHERE matches.etat = 't' and matches.score_final = pariage.score_prevu;
+                        """
+
+        return UserEventModel.load(query)
+
+    @staticmethod
+    def load_lost_events():
+        # encours ou non encore joue
+        query = """
+                       SELECT * FROM pariage 
+                              JOIN matches ON pariage.id_match = matches.id 
+                                  WHERE matches.etat = 't' and matches.score_final != pariage.score_prevu;
+                        """
+
+        return UserEventModel.load(query)
+
+    @staticmethod
+    def load(query=None):
+        if not query:
+            query = "SELECT * FROM matches WHERE etat='n'"
         conn = DatabaseConnector()
         conn.connect()
         data = []
         try:
             with conn.get_con().cursor() as cursor:
-                query = "SELECT * FROM Matches"
+
                 cursor.execute(query)
                 columns = [col[0] for col in cursor.description]  # Fetch column names
                 rows = cursor.fetchall()
@@ -17,7 +60,10 @@ class UserEventModel:
                     # Create a dictionary for each row using column names
                     row_dict = dict(zip(columns, row))
                     row_dict['date_match'] = row_dict['date_match'].strftime('%Y-%m-%d')
-                    row_dict['heure_match'] = str(row_dict['heure_match'])
+                    row_dict['heure_match'] = str(row_dict['heure_match']).removesuffix(':00')
+                    # split the score values
+                    row_dict['score_away_team'] = str(row_dict['score_final'].split(':')[0])
+                    row_dict['score_home_team'] = str(row_dict['score_final'].split(':')[1])
                     data.append(row_dict)
         except Exception as e:
             print(f'Exception: {e}')
@@ -25,4 +71,3 @@ class UserEventModel:
             if conn.get_con():
                 conn.get_con().close()
         return data
-

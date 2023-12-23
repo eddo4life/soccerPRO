@@ -4,9 +4,12 @@ from account.model.userprofilemodel import UserProfileModel
 
 
 class UserProfile(QWidget):
+    account_id = None
+
     def __init__(self, home):
         super().__init__()
         self.home = home
+        self.upm = UserProfileModel()
         self.profile()
         self.update_values()
 
@@ -15,9 +18,9 @@ class UserProfile(QWidget):
         form.setSpacing(10)
         main_layout = QHBoxLayout(self)
         main_layout.addLayout(form)
-        profile_label=QLabel('')
+        profile_label = QLabel('')
         main_layout.addWidget(profile_label)
-        main_layout.setStretchFactor(form,2)
+        main_layout.setStretchFactor(form, 2)
         main_layout.setStretchFactor(profile_label, 1)
 
         self.username_input = QLineEdit()
@@ -65,21 +68,28 @@ class UserProfile(QWidget):
         ...
 
     def update_values(self):
-        upm = UserProfileModel()
-        upm.retrieve_data()
-        self.username_input.setText(upm.get_username())
-        self.name_input.setText(upm.get_name())
-        self.first_name_input.setText(upm.get_first_name())
+
+        self.upm.retrieve_data()
+        UserProfile.account_id = self.upm.get_account_id()
+        self.username_input.setText(self.upm.get_username())
+        self.name_input.setText(self.upm.get_name())
+        self.first_name_input.setText(self.upm.get_first_name())
 
         self.sex_combobox.addItems(["M", "F"])
 
         # Automatically select the value in the QComboBox that matches the sex from UserProfileModel
-        current_sex = upm.get_sex()
+        current_sex = self.upm.get_sex()
         if current_sex in ["M", "F"]:
             index = self.sex_combobox.findText(current_sex)
             if index != -1:
                 self.sex_combobox.setCurrentIndex(index)
+        self.telephone_input.setText(self.upm.get_telephone())
+        self.address_input.setText(self.upm.get_address())
+        self.nif_cin_input.setText(self.upm.get_nif_cin())
 
-        self.telephone_input.setText(upm.get_telephone())
-        self.address_input.setText(upm.get_address())
-        self.nif_cin_input.setText(upm.get_nif_cin())
+    def get_sold(self):
+        return self.upm.get_sold()
+
+    def get_user_name(self):
+
+        return self.upm.get_username()

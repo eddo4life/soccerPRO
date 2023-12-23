@@ -1,5 +1,6 @@
+from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtWidgets import QWidget, QTableWidget, QAbstractItemView, QHBoxLayout, QFormLayout, QLineEdit, QPushButton, \
-    QTableWidgetItem
+    QTableWidgetItem, QMessageBox
 
 from account.model.userprofilemodel import UserProfileModel
 
@@ -8,6 +9,7 @@ class Reload(QWidget):
     def __init__(self):
         super().__init__()
         self.hbLayout = QHBoxLayout()
+
         self.formulaire()
         self.tableview()
         self.setLayout(self.hbLayout)
@@ -15,9 +17,9 @@ class Reload(QWidget):
 
     def formulaire(self):
         self.form = QFormLayout()
-        self.txt_id = QLineEdit()
-        self.txt_id.setPlaceholderText("ID")
-        self.txt_id.setDisabled(True)
+        self.account_id = QLineEdit()
+        self.account_id.setPlaceholderText("ID")
+        self.account_id.setDisabled(True)
         self.txt_nom = QLineEdit()
         self.txt_nom.setPlaceholderText("Nom")
         self.txt_nom.setDisabled(True)
@@ -25,11 +27,12 @@ class Reload(QWidget):
         self.txt_prenom.setPlaceholderText("Prenom")
         self.txt_prenom.setDisabled(True)
         self.new_sold = QLineEdit()
+        self.new_sold.setValidator(QDoubleValidator())
 
         self.bt_reload = QPushButton("Recharger")
         self.bt_reload.clicked.connect(self.reload)
 
-        self.form.addRow("ID", self.txt_id)
+        self.form.addRow("ID", self.account_id)
         self.form.addRow("Nom", self.txt_nom)
         self.form.addRow("Prenom", self.txt_prenom)
         self.form.addRow("Solde", self.new_sold)
@@ -61,7 +64,7 @@ class Reload(QWidget):
             name = self.table.item(selected_row, 1)
             first_name = self.table.item(selected_row, 2)
             if code and name and first_name:
-                self.txt_id.setText(code.text())
+                self.account_id.setText(code.text())
                 self.txt_nom.setText(name.text())
                 self.txt_prenom.setText(first_name.text())
 
@@ -77,4 +80,8 @@ class Reload(QWidget):
             print('no data')
 
     def reload(self):
-        print('reloading')
+        sold = float(self.new_sold.text())
+        if sold >= 10:
+            UserProfileModel.update_sold(self.account_id.text(), sold)
+        else:
+            QMessageBox.warning(None, "Echec", 'Le montant doit etre >=10', QMessageBox.Ok)

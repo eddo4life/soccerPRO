@@ -29,7 +29,6 @@ class AdminHomePage(QMainWindow):
         # Add tabs to the tab widget
         self.tab_widget.addTab(Reload(), "Renflouement")
         self.tab_widget.addTab(Matches(), "Gestion match")
-        self.tab_widget.addTab(self.tab3, "Tab 3")
 
         self.layout.addWidget(self.tab_widget)
 
