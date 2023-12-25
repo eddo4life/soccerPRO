@@ -5,6 +5,7 @@ from account.model.userprofilemodel import UserProfileModel
 
 class UserProfile(QWidget):
     account_id = None
+    id_user = None
 
     def __init__(self, home):
         super().__init__()
@@ -69,7 +70,8 @@ class UserProfile(QWidget):
 
     def update_values(self):
 
-        self.upm.retrieve_data()
+        self.upm.retrieve_data(UserProfile.id_user)
+
         UserProfile.account_id = self.upm.get_account_id()
         self.username_input.setText(self.upm.get_username())
         self.name_input.setText(self.upm.get_name())

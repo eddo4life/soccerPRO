@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QFormLayout, QLineEdit, QPushB
     QStackedWidget, QTreeWidget, QTreeWidgetItem, QTextEdit, QHBoxLayout, QMessageBox
 
 from account.model.userprofilemodel import UserProfileModel
+from account.view.user.profile.userprofile import UserProfile
 from labs.lab import Lab
 
 
@@ -157,7 +158,8 @@ class SignUpForm(QWidget):
 
         if upm.valid_data():
             upm.save()
+            self.login_window.login()
         else:
             QMessageBox.warning(None, "Denied", 'Toutes les informations sont requises!', QMessageBox.Ok)
-
-#       login
+            UserProfile.id_user = telephone  # automatically login with telephone
+            self.login_window.login()

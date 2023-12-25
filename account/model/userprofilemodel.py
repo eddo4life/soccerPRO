@@ -84,16 +84,15 @@ class UserProfileModel:
     def set_sold(self, sold):
         self.__sold = sold
 
-    def retrieve_data(self):
+    def retrieve_data(self, id_user):
         conn = DatabaseConnector()
         conn.connect()
         # Create a cursor
         cursor = conn.get_con().cursor()
 
         # Execute the query
-        telephone_number = '5555432'
-        query = "SELECT * FROM parieur WHERE telephone = %s LIMIT 1;"
-        cursor.execute(query, (telephone_number,))
+        query = "SELECT * FROM parieur WHERE telephone = %s or username = %s LIMIT 1;"
+        cursor.execute(query, (id_user, id_user))
 
         # Fetch the result
         result = cursor.fetchone()
@@ -115,9 +114,8 @@ class UserProfileModel:
             self.set_username(result[7])
             self.set_password(result[8])
             self.set_sold(result[9])
-
         else:
-            print("No data found for the given telephone number.")
+            return None
 
     @staticmethod
     def get_all():

@@ -62,7 +62,7 @@ class ForgotPasswordStep(QWidget):
     def __init__(self, login_window):
         super().__init__()
 
-        # Reference to the LoginWindow
+        # Reference for LoginWindow
         self.login_window = login_window
 
         # Set up UI elements for the Forgot Password step
@@ -122,8 +122,6 @@ class LoginWindow(QWidget):
         y = (screen.height() - self.height()) // 2
         self.move(x, y)
 
-    #     self.setMaximumSize(round(screen.width()//1.4), round(screen.height()//1.6))
-
     def init_ui(self):
         # Create widgets
         self.id_entry = QLineEdit()
@@ -148,13 +146,11 @@ class LoginWindow(QWidget):
 
         # Set up stacked widget for login steps
         self.stacked_widget = QStackedWidget(self)
+        # setup action
 
         # Step 0: Login
         login_step = QWidget(self)
         login_step.setLayout(get_centered_layout(form_layout))  # Set the layout for login_step
-
-        # Set a fixed size for the login widget
-        # login_step.setFixedSize(300, 200)  # Adjust the size as needed
 
         self.stacked_widget.addWidget(login_step)
 
@@ -177,10 +173,16 @@ class LoginWindow(QWidget):
         # Set up main layout
         main_layout = QGridLayout()
         main_layout.addWidget(self.stacked_widget)  # Add the stacked widget to the main layout
-        # main_layout.setAlignment(self.stacked_widget, Qt.AlignCenter)
 
         # Set the layout for the main window
         self.setLayout(main_layout)
+
+    def revalidate(self, index, new_widget):
+        self.stacked_widget.insertWidget(index, new_widget)
+        # Remove the old widget
+        old_widget = self.stacked_widget.widget(index + 1)
+        self.stacked_widget.removeWidget(old_widget)
+        old_widget.deleteLater()
 
     def show_forgot_password_step(self):
         # Switch to the Forgot Password step
@@ -191,6 +193,8 @@ class LoginWindow(QWidget):
         self.stacked_widget.setCurrentIndex(2)
 
     def login(self):
+        # synchronize with the latest data
+        self.revalidate(3, UserHomePage(self))
         # Switch to the user's home page
         self.stacked_widget.setCurrentIndex(3)
 
@@ -201,5 +205,3 @@ class LoginWindow(QWidget):
         dialog = AdminDialog(self)
         if dialog.exec_() == QDialog.Accepted:
             self.stacked_widget.setCurrentIndex(4)
-        else:
-            print("Login canceled")

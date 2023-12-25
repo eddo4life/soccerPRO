@@ -1,22 +1,9 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication, QGridLayout, QWidget
+from PyQt5.QtWidgets import QApplication
 
-from account.model.usereventmodel import UserEventModel
 from account.view.auth.login import LoginWindow
-from account.view.user.profile.userprofile import UserProfile
-
-
-class Init(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("MainView")
-        self.setMinimumSize(600, 300)
-        grid = QGridLayout()
-        grid.addWidget(UserProfile(), 0, 0)
-
-        self.setLayout(grid)
-
+from account.view.mainwindow import MainWindow
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -24,4 +11,6 @@ if __name__ == '__main__':
     # init.show()
     login_window = LoginWindow()
     login_window.show()
+    # main_window = MainWindow()
+    # main_window.show()
     sys.exit(app.exec_())
