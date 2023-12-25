@@ -146,16 +146,6 @@ class LoginWindow(QWidget):
         form_layout.addRow(self.login_button)
         form_layout.addRow(self.signup_button)
 
-        # Centered Container Widget
-        # container_widget = QWidget()
-        # container_widget.setStyleSheet("background-color: rgb(245,245,245);")
-        # container_widget.setLayout(form_layout)
-        # container_widget.setFixedSize(500, 250)
-
-        # # Centered Layout
-        # center_layout = QHBoxLayout()
-        # center_layout.addWidget(container_widget, alignment=Qt.AlignmentFlag.AlignCenter)
-
         # Set up stacked widget for login steps
         self.stacked_widget = QStackedWidget(self)
 

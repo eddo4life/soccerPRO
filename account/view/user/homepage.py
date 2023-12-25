@@ -22,8 +22,8 @@ class UserHomePage(QWidget):
     def init_ui(self):
         # Create the event tab
         tab_widget = QTabWidget()
-        tab_widget.addTab(Event(),Lab.get_icon('event.png'), "Events")
-        tab_widget.addTab(HistoryTabs(),Lab.get_icon('history.png'), "History")
+        tab_widget.addTab(Event(), Lab.get_icon('event.png'), "Events")
+        tab_widget.addTab(HistoryTabs(), Lab.get_icon('history.png'), "History")
 
         # Main vertical layout
         main_layout = QVBoxLayout()

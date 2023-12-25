@@ -2,9 +2,9 @@ from database.connection import DatabaseConnector
 
 
 class UserProfileModel:
-    def __init__(self, username=None, name=None, sex=None, first_name=None,
-                 address=None, telephone=None, nif_cin=None, password=None):
-        self.__account_id = None
+    def __init__(self, account_id=None, username=None, name=None, sex=None, first_name=None,
+                 address=None, telephone=None, nif_cin=None, password=None, status=None):
+        self.__account_id = account_id
         self.__username = username
         self.__name = name
         self.__sex = sex
@@ -13,7 +13,8 @@ class UserProfileModel:
         self.__telephone = telephone
         self.__nif_cin = nif_cin
         self.__password = password
-        self.__sold = None
+        self.__sold = '0.0'
+        self.__status = status
 
     # Getter and Setter for username
     def get_account_id(self):
@@ -118,7 +119,8 @@ class UserProfileModel:
         else:
             print("No data found for the given telephone number.")
 
-    def get_all(self):
+    @staticmethod
+    def get_all():
         conn = DatabaseConnector()
         conn.connect()
         datas = []
@@ -134,6 +136,32 @@ class UserProfileModel:
             if conn:
                 conn.get_con().close()
         return datas
+
+    def valid_data(self):
+        return all([self.__username, self.__name, self.__first_name, self.__address, self.__telephone, self.__nif_cin])
+
+    def save(self):
+        conn = DatabaseConnector()
+        conn.connect()
+        cursor = conn.get_con().cursor(prepared=True)
+        # | code | nom | prenom | sexe | adresse | telephone | nif_cin | username | mot_de_passe | solde | etat |
+        try:
+            query = """
+                            INSERT INTO parieur
+                            (code, nom, prenom, sexe, adresse, telephone, nif_cin, username, mot_de_passe, solde, etat)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        """
+            value = (self.__account_id, self.__name, self.__first_name, self.__sex, self.__address,
+                     self.__telephone, self.__nif_cin, self.__username, self.__password, self.__sold, self.__status)
+
+            cursor.execute(query, value)
+            conn.get_con().commit()
+            print("Data successfully inserted.")
+        except Exception as err:
+            print(f"Error: {err}")
+
+        if conn.get_con().is_connected():
+            conn.get_con().close()
 
     @staticmethod
     def update_sold(account_id, new_amount):

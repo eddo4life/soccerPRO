@@ -13,7 +13,7 @@ class Reload(QWidget):
         self.formulaire()
         self.tableview()
         self.setLayout(self.hbLayout)
-        self.load()
+        self.load_data()
 
     def formulaire(self):
         self.form = QFormLayout()
@@ -42,18 +42,16 @@ class Reload(QWidget):
         self.hbLayout.setStretchFactor(self.form, 1)
 
     def tableview(self):
-
         self.table = QTableWidget()
         self.table.clicked.connect(self.handle_table_click)
         # Set the table as not editable
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # definir le nombre de ligne et de colonne
         header = ["ID", "PSEUDO", "NOM", "PRENOM", "SEXE", "TELEPHONE", "ADRESSE", "SOLDE", "ETAT"]
         self.table.setColumnCount(len(header))
         self.table.setRowCount(0)
         self.table.setAlternatingRowColors(True)
         self.table.setHorizontalHeaderLabels(header)
-        # ajouter le tableau dans le hbLayout
+        self.table.verticalHeader().setVisible(False)
         self.hbLayout.addWidget(self.table)
         self.hbLayout.setStretchFactor(self.table, 3)
 
@@ -68,16 +66,14 @@ class Reload(QWidget):
                 self.txt_nom.setText(name.text())
                 self.txt_prenom.setText(first_name.text())
 
-    def load(self):
-        data = UserProfileModel().get_all()
+    def load_data(self):
+        data = UserProfileModel.get_all()
         if data:
             for row_number, row_data in enumerate(data):
                 self.table.insertRow(row_number)
                 for column_number, column_data in enumerate(row_data):
                     item = QTableWidgetItem(str(column_data))
                     self.table.setItem(row_number, column_number, item)
-        else:
-            print('no data')
 
     def reload(self):
         sold = float(self.new_sold.text())

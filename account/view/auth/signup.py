@@ -1,6 +1,9 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QComboBox, \
-    QStackedWidget, QTreeWidget, QTreeWidgetItem, QTextEdit, QHBoxLayout
+    QStackedWidget, QTreeWidget, QTreeWidgetItem, QTextEdit, QHBoxLayout, QMessageBox
+
+from account.model.userprofilemodel import UserProfileModel
+from labs.lab import Lab
 
 
 def get_centered_layout(layout, w=500, h=250):
@@ -139,14 +142,22 @@ class SignUpForm(QWidget):
         self.login_window.stacked_widget.setCurrentIndex(0)
 
     def sign_up(self):
-        # Add your sign-up logic here
-        print("Signing up...")
-        # You can retrieve the entered information using:
-        # name = self.name_input.text()
-        # first_name = self.first_name_input.text()
-        # sex = self.sex_combobox.currentText()
-        # telephone = self.telephone_input.text()
-        # address = self.address_input.text()
-        # nif_cin = self.nif_cin_input.text()
-        # username = self.username_input.text()
-        # password = self.password_input.text()
+        # Retrieving and cleaning information:
+        name = self.name_input.text().upper().strip()
+        first_name = self.first_name_input.text().title().strip()
+        sex = self.sex_combobox.currentText().strip()
+        telephone = self.telephone_input.text().strip()
+        address = self.address_input.toPlainText().strip()
+        nif_cin = self.nif_cin_input.text().strip()
+        username = self.username_input.text().strip()
+        password = self.password_input.text().strip()
+        upm = UserProfileModel(account_id=Lab.generate_id(), username=username, name=name, sex=sex,
+                               first_name=first_name,
+                               address=address, telephone=telephone, nif_cin=nif_cin, password=password, status='A')
+
+        if upm.valid_data():
+            upm.save()
+        else:
+            QMessageBox.warning(None, "Denied", 'Toutes les informations sont requises!', QMessageBox.Ok)
+
+#       login
