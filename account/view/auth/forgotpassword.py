@@ -11,6 +11,8 @@ class ForgotPassword(QWidget):
         # Reference for LoginWindow
         self.__main_window = main_window
 
+        self.__main_window.setWindowTitle('Forgot password')
+
         # Set up UI elements for the Forgot Password step
         self.init_ui()
 

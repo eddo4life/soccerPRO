@@ -7,7 +7,7 @@ from labs.lab import Lab
 class AdminDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Login")
+        self.setWindowTitle("Login admin")
         self.setFixedSize(400, 250)
 
         self.id_label = QLabel("ID:")
@@ -36,6 +36,7 @@ class AdminDialog(QDialog):
 
         # Check if ID is 'admin' and password is '1234'
         if entered_id == 'admin' and entered_password == '1234':
+
             self.accept()  # Accept the dialog (credentials are correct)
         else:
             self.error_label.setText("Incorrect credentials")
@@ -50,13 +51,11 @@ class LoginWindow(QWidget):
         self.__main_window = main_window
         # Set up UI elements for the Login window
         self.init_ui()
-        # Set window properties
-        self.__main_window.setWindowTitle('Login Window')
 
     def init_ui(self):
         # Create widgets
         self.id_entry = QLineEdit('swhite')
-        self.password_entry = QLineEdit('sophia_pass')
+        self.password_entry = QLineEdit('1234')
         self.password_entry.setEchoMode(QLineEdit.Password)  # To hide the password input
         self.forgot_password_label = QLabel('<a href="#">Forgot Password?</a>')
         self.forgot_password_label.linkActivated.connect(self.show_forgot_password_step)
@@ -80,13 +79,16 @@ class LoginWindow(QWidget):
 
     def show_forgot_password_step(self):
         # Switch to the Forgot Password step
+        self.__main_window.set_title('Forgot password')
         self.__main_window.change_step(1)
 
     def signup(self):
         # Switch to the Sign-up step
+        self.__main_window.set_title('Signup')
         self.__main_window.change_step(2)
 
     def admin_login(self):
         dialog = AdminDialog(self)
         if dialog.exec_() == QDialog.Accepted:
+            self.__main_window.set_title('Admin home page')
             self.__main_window.change_step(4)

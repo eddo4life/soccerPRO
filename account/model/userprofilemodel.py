@@ -78,11 +78,17 @@ class UserProfileModel:
     def get_sold(self):
         return self.__sold
 
+    def get_status(self):
+        return self.__status
+
     def set_password(self, password):
         self.__password = password
 
     def set_sold(self, sold):
         self.__sold = sold
+
+    def set_status(self, status):
+        self.__status = status
 
     def retrieve_data(self, user_id, user_password):
         conn = DatabaseConnector()
@@ -91,7 +97,7 @@ class UserProfileModel:
         cursor = conn.get_con().cursor()
 
         # Execute the query
-        query = "SELECT * FROM parieur WHERE telephone = %s or username = %s and mot_de_passe=%s LIMIT 1;"
+        query = "SELECT * FROM parieur WHERE telephone = %s or username = %s and mot_de_passe=%s and etat!='s' LIMIT 1;"
         cursor.execute(query, (user_id, user_id, user_password))
 
         # Fetch the result
@@ -114,6 +120,7 @@ class UserProfileModel:
             self.set_username(result[7])
             self.set_password(result[8])
             self.set_sold(result[9])
+            self.set_status(result[10])
         else:
             return None
 
@@ -124,7 +131,7 @@ class UserProfileModel:
         datas = []
         try:
             with conn.get_con().cursor() as cursor:
-                query = "SELECT code,username,nom,prenom,sexe,telephone,adresse,solde,etat FROM parieur"
+                query = "SELECT code,username,nom,prenom,sexe,telephone,adresse,solde,etat FROM parieur where etat!='S'"
                 cursor.execute(query)
                 datas.extend(cursor.fetchall())
         except Exception as e:
@@ -138,11 +145,11 @@ class UserProfileModel:
     def valid_data(self):
         return all([self.__username, self.__name, self.__first_name, self.__address, self.__telephone, self.__nif_cin])
 
+    # signing up
     def save(self):
         conn = DatabaseConnector()
         conn.connect()
         cursor = conn.get_con().cursor(prepared=True)
-        # | code | nom | prenom | sexe | adresse | telephone | nif_cin | username | mot_de_passe | solde | etat |
         try:
             query = """
                             INSERT INTO parieur
@@ -154,7 +161,43 @@ class UserProfileModel:
 
             cursor.execute(query, value)
             conn.get_con().commit()
-            print("Data successfully inserted.")
+        except Exception as err:
+            print(f"Error: {err}")
+
+        if conn.get_con().is_connected():
+            conn.get_con().close()
+
+    # update profile
+    def update(self):
+        conn = DatabaseConnector()
+        conn.connect()
+        cursor = conn.get_con().cursor(prepared=True)
+        try:
+            query = """
+                        UPDATE parieur SET nom=%s, prenom=%s, sexe=%s, adresse=%s, telephone=%s, nif_cin=%s, username=%s, mot_de_passe=%s, etat=%s where code=%s
+                    """
+            value = (self.__name, self.__first_name, self.__sex, self.__address, self.__telephone, self.__nif_cin,
+                     self.__username,
+                     self.__password, self.__status, self.__account_id)
+
+            cursor.execute(query, value)
+            conn.get_con().commit()
+        except Exception as err:
+            print(f"Error: {err}")
+
+        if conn.get_con().is_connected():
+            conn.get_con().close()
+
+    @staticmethod
+    def delete_account(code):
+        conn = DatabaseConnector()
+        conn.connect()
+        cursor = conn.get_con().cursor(prepared=True)
+        try:
+            query = " UPDATE parieur SET etat='S' where code=%s"
+            cursor.execute(query, (code,))
+            conn.get_con().commit()
+            print('accoun deleted')
         except Exception as err:
             print(f"Error: {err}")
 
@@ -167,15 +210,11 @@ class UserProfileModel:
         conn.connect()
         cursor = conn.get_con().cursor(prepared=True)
         try:
-            query = """
-                UPDATE parieur SET solde=solde+%s WHERE code=%s
-            """
+            query = "UPDATE parieur SET solde=solde+%s WHERE code=%s"
             value = (new_amount, account_id)
 
             cursor.execute(query, value)
-            print('query executed')
             conn.get_con().commit()
-            print("Data successfully updated.")
         except Exception as err:
             print(f"Error: {err}")
 
@@ -188,15 +227,18 @@ class UserProfileModel:
         conn.connect()
         cursor = conn.get_con().cursor(prepared=True)
         try:
-            query = """
-                    UPDATE parieur SET mot_de_passe=%s WHERE nif_cin =%s and telephone=%s
-                """
-            value = (password, nif_cin, telephone)
-            cursor.execute(query, value)
-            conn.get_con().commit()
-            print("Data successfully updated.")
+            query = "SELECT * FROM parieur where telephone =%s and nif_cin=%s"
+            cursor.execute(query, (telephone, nif_cin))
+            if cursor.fetchall():
+                query = "UPDATE parieur SET mot_de_passe=%s WHERE nif_cin =%s and telephone=%s"
+                value = (password, nif_cin, telephone)
+                cursor.execute(query, value)
+                conn.get_con().commit()
+            else:
+                return False
         except Exception as err:
             print(f"Error: {err}")
 
         if conn.get_con().is_connected():
             conn.get_con().close()
+        return True

@@ -46,7 +46,7 @@ class UserEventModel:
 
     @staticmethod
     def load(query=None):
-        query_not_null = query#make sure the query was not null
+        query_not_null = query  # make sure the query was not null
         if not query:
             query = "SELECT * FROM matches WHERE etat='n' "
 

@@ -11,7 +11,8 @@ class UserHomePage(QWidget):
     def __init__(self, main_window=None):
         super().__init__()
         # this instance is required to log out
-        self.main_window = main_window
+        self.__main_window = main_window
+        self.set_title()
         self.username_label = QLabel()
         self.sold_label = QLabel()
         self.user_profile = UserProfile(self)
@@ -63,7 +64,7 @@ class UserHomePage(QWidget):
 
         connect = QPushButton('Se connecter')
         # login
-        connect.clicked.connect(lambda: self.main_window.initialize())
+        connect.clicked.connect(lambda: self.__main_window.initialize())
         Lab.set_size_policy_fixed(connect)
 
         return header if UserProfile.account_id else connect
@@ -75,10 +76,18 @@ class UserHomePage(QWidget):
         self.sold_label.setText('Sold : ' + str(sold))
 
     def open_profile(self):
+        self.set_title('User profile')
         self.__stacked_widget.setCurrentIndex(1)
 
     def logout(self):
-        self.main_window.initialize()
+        self.set_title('Login')
+        self.__main_window.initialize()
 
     def home(self):
+        self.set_title()
         self.__stacked_widget.setCurrentIndex(0)
+
+    # this method is used from the profile window in order to access the main window instance
+    # to set the title accordingly
+    def set_title(self, title='User home-page'):
+        self.__main_window.setWindowTitle(title)

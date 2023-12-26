@@ -81,10 +81,6 @@ class Matches(QWidget):
         Lab.set_size_policy_fixed(self.clear_btn)
         self.clear_btn.clicked.connect(self.init_fields)
 
-        background = QWidget()
-        background.setStyleSheet(
-            f"background-image: url(admin-bet.png); background-position: center;background-size: cover;")
-
         self.hbox = QHBoxLayout()
         self.hbox.addLayout(self.layout)
         self.hbox.addWidget(self.show_event())

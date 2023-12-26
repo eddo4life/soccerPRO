@@ -6,6 +6,7 @@ from account.view.auth.login import LoginWindow
 from account.view.auth.signup import SignUpForm
 from account.view.user.homepage import UserHomePage
 from account.view.user.profile.userprofile import UserProfile
+from labs.lab import Lab
 
 
 class MainWindow(QMainWindow):
@@ -16,6 +17,9 @@ class MainWindow(QMainWindow):
         self.init_windows()
         self.setGeometry(0, 0, 1000, 800)
         self.center_on_screen()
+        self.setWindowIcon(Lab.get_icon('soccer.png'))
+        # set the title initially
+        self.set_title('Login')
 
     def center_on_screen(self):
         # Get the geometry of the screen
@@ -44,15 +48,23 @@ class MainWindow(QMainWindow):
         self.__stacked_widget.addWidget(AdminHomePage(self))
 
     def login(self, telephone, password):
+        # revalidate user data when loging in
         UserProfile.init_credentials(telephone, password)
         self.revalidate(3, UserHomePage(self))
-
         self.change_step(3)
 
+    def set_title(self, title):
+        self.setWindowTitle(title)
+
     def initialize(self):
+        self.set_title('Login')
         self.change_step(0)
 
     def change_step(self, index):
+        if index == 0:
+            # revalidate the admin data,
+            self.revalidate(4, AdminHomePage(self))
+        # select the specific stack
         self.__stacked_widget.setCurrentIndex(index)
 
     def revalidate(self, index, new_widget):

@@ -11,8 +11,6 @@ class SignUpForm(QWidget):
     def __init__(self, main_window=None):
         super().__init__()
 
-        self.setWindowTitle("Sign Up Form")
-        self.setGeometry(100, 100, 800, 500)
         # Reference to the LoginWindow
         self.__main_window = main_window
         self.init_ui()
@@ -146,7 +144,6 @@ class SignUpForm(QWidget):
         if upm.valid_data():
             upm.save()
             UserProfile.init_credentials(telephone, password)  # automatically login with telephone and password
-
             self.__main_window.login()
         else:
             QMessageBox.warning(None, "Denied", 'Toutes les informations sont requises!', QMessageBox.Ok)
