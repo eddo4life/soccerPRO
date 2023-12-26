@@ -1,6 +1,3 @@
 # Default ignored files
 /shelf/
-/workspace.xml__pycache__/
-*.pyc
-
-
+/workspace.xml
