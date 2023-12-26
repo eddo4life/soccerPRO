@@ -5,22 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dee1e0f1-ce63-415b-8ac7-e0689080e776" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/account/view/auth/forgotpassword.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/model/datamodel.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/account/model/usereventmodel.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/model/usereventmodel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/model/userprofilemodel.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/model/userprofilemodel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/admin/homepage.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/admin/homepage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/auth/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/auth/login.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/auth/signup.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/auth/signup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/mainwindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/mainwindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/user/basewidget.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/basewidget.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/user/card.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/card.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/user/event.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/event.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/user/homepage.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/homepage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/user/profile/userprofile.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/profile/userprofile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/labs/lab.py" beforeDir="false" afterPath="$PROJECT_DIR$/labs/lab.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
