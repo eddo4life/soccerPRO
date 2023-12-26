@@ -1,12 +1,13 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDoubleValidator, QIntValidator
-from PyQt5.QtWidgets import QPushButton, QLineEdit
+from PyQt5.QtWidgets import QPushButton, QLineEdit, QMessageBox
 from PyQt5.QtWidgets import QWidget, QCheckBox, QLabel, QVBoxLayout, QHBoxLayout
 
 from account.model.betcardmodel import BetCardModel
 from account.model.betmodel import BetModel
 from account.model.usereventmodel import UserEventModel
 from account.view.user.basewidget import BaseWidget
+from account.view.user.profile.userprofile import UserProfile
 
 
 def unselect_checkbox(widget, target_text='placer'):
@@ -14,7 +15,7 @@ def unselect_checkbox(widget, target_text='placer'):
     for i in range(layout.count()):
         try:
             item = layout.itemAt(i)
-            if isinstance(item.widget(), QCheckBox) and item.widget().text().lower() == target_text.lower():
+            if isinstance(item.widget(), QCheckBox) and item.widget().text().lower() == target_text:
                 item.widget().setChecked(False)
         except Exception as e:
             print(f"An exception occurred: {str(e)}")
@@ -153,19 +154,19 @@ class Ticket(BaseWidget):
         self.clear_btn = QPushButton('clear')
 
     def add_buttons(self):
-        sold_input = QLineEdit()
-        validator = QDoubleValidator()
-        sold_input.setValidator(validator)
-        sold_input.setPlaceholderText('sold')
         validate_btn = QPushButton('validate')
         # add components to the layout
         hbox = QHBoxLayout()
         hbox.addWidget(self.clear_btn)
-        hbox.addWidget(sold_input)
         hbox.addWidget(validate_btn)
+        if not UserProfile.account_id:
+            validate_btn.setEnabled(False)
         # add actions
         validate_btn.clicked.connect(self.validate)
         return hbox
 
     def validate(self):
-        BetModel(self.event_list).save()
+        if self.event_list:
+            BetModel(self.event_list).save()
+        else:
+            QMessageBox.warning(None, "", 'Veuillez placer au moins un paris!', QMessageBox.Ok)

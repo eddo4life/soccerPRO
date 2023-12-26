@@ -1,3 +1,4 @@
+from account.view.user.profile.userprofile import UserProfile
 from database.connection import DatabaseConnector
 
 
@@ -16,7 +17,7 @@ class UserEventModel:
     def load_pending_events():
         # encours ou non encore joue
         query = """
-                    SELECT * FROM pariage JOIN matches ON pariage.id_match = matches.id WHERE matches.etat = 'e' or matches.etat = 'n';
+                    SELECT * FROM pariage JOIN matches ON pariage.id_match = matches.id WHERE matches.etat = 'e' or matches.etat = 'n' and pariage.id_compte=%s;
                     """
 
         return UserEventModel.load(query)
@@ -27,7 +28,7 @@ class UserEventModel:
         query = """
                         SELECT * FROM pariage 
                                  JOIN matches ON pariage.id_match = matches.id 
-                                          WHERE matches.etat = 't' and matches.score_final = pariage.score_prevu;
+                                          WHERE matches.etat = 't' and matches.score_final = pariage.score_prevu and pariage.id_compte=%s;
                         """
 
         return UserEventModel.load(query)
@@ -38,22 +39,26 @@ class UserEventModel:
         query = """
                        SELECT * FROM pariage 
                               JOIN matches ON pariage.id_match = matches.id 
-                                  WHERE matches.etat = 't' and matches.score_final != pariage.score_prevu;
+                                  WHERE matches.etat = 't' and matches.score_final != pariage.score_prevu and pariage.id_compte=%s;
                         """
 
         return UserEventModel.load(query)
 
     @staticmethod
     def load(query=None):
+        query_not_null = query#make sure the query was not null
         if not query:
-            query = "SELECT * FROM matches WHERE etat='n'"
+            query = "SELECT * FROM matches WHERE etat='n' "
+
         conn = DatabaseConnector()
         conn.connect()
         data = []
         try:
             with conn.get_con().cursor() as cursor:
-
-                cursor.execute(query)
+                if UserProfile.account_id and query_not_null:
+                    cursor.execute(query, (UserProfile.account_id,))
+                else:
+                    cursor.execute(query)
                 columns = [col[0] for col in cursor.description]  # Fetch column names
                 rows = cursor.fetchall()
                 for row in rows:
@@ -65,8 +70,8 @@ class UserEventModel:
                     row_dict['score_away_team'] = str(row_dict['score_final'].split(':')[0])
                     row_dict['score_home_team'] = str(row_dict['score_final'].split(':')[1])
                     data.append(row_dict)
-        except Exception as e:
-            print(f'Exception: {e}')
+        except:
+            ...
         finally:
             if conn.get_con():
                 conn.get_con().close()

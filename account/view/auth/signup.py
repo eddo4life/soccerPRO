@@ -7,26 +7,14 @@ from account.view.user.profile.userprofile import UserProfile
 from labs.lab import Lab
 
 
-def get_centered_layout(layout, w=500, h=250):
-    layout.setSpacing(20)
-    container_widget = QWidget()
-    # container_widget.setStyleSheet("background-color: rgb(250,250,250);")
-    container_widget.setLayout(layout)
-    container_widget.setFixedSize(w, h)
-    # Centered Layout
-    center_layout = QHBoxLayout()
-    center_layout.addWidget(container_widget, alignment=Qt.AlignmentFlag.AlignCenter)
-    return center_layout
-
-
 class SignUpForm(QWidget):
-    def __init__(self, login_window=None):
+    def __init__(self, main_window=None):
         super().__init__()
 
         self.setWindowTitle("Sign Up Form")
         self.setGeometry(100, 100, 800, 500)
         # Reference to the LoginWindow
-        self.login_window = login_window
+        self.__main_window = main_window
         self.init_ui()
 
     def init_ui(self):
@@ -112,11 +100,10 @@ class SignUpForm(QWidget):
         hbox.addWidget(self.next_button)
         hbox.addWidget(self.cancel_button)
         self.layout.addLayout(hbox)
-        self.current_step = 0
+        self.current_step = 0  # initially
         self.update_tree()
         #     set the layout
-        self.setLayout(
-            get_centered_layout(self.layout, 1000, 700))  # rewrite the get_centered_layout to avoid circular import
+        self.setLayout(Lab.get_centered_layout(self.layout, 1000, 700))
 
     def update_tree(self):
         for i, item in enumerate(self.tree_items):
@@ -140,7 +127,7 @@ class SignUpForm(QWidget):
             self.update_tree()
 
     def back_to_login(self):
-        self.login_window.stacked_widget.setCurrentIndex(0)
+        self.__main_window.initialize()
 
     def sign_up(self):
         # Retrieving and cleaning information:
@@ -158,8 +145,8 @@ class SignUpForm(QWidget):
 
         if upm.valid_data():
             upm.save()
-            self.login_window.login()
+            UserProfile.init_credentials(telephone, password)  # automatically login with telephone and password
+
+            self.__main_window.login()
         else:
             QMessageBox.warning(None, "Denied", 'Toutes les informations sont requises!', QMessageBox.Ok)
-            UserProfile.id_user = telephone  # automatically login with telephone
-            self.login_window.login()

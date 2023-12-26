@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QStackedWidget, \
-    QGridLayout
+    QGridLayout, QPushButton
 
 from account.view.user.event import Event
 from account.view.user.history import HistoryTabs
@@ -8,10 +8,10 @@ from labs.lab import Lab
 
 
 class UserHomePage(QWidget):
-    def __init__(self, login_window=None):
+    def __init__(self, main_window=None):
         super().__init__()
         # this instance is required to log out
-        self.login_window = login_window
+        self.main_window = main_window
         self.username_label = QLabel()
         self.sold_label = QLabel()
         self.user_profile = UserProfile(self)
@@ -30,15 +30,15 @@ class UserHomePage(QWidget):
         main_layout.addWidget(self.header())
         main_layout.addWidget(tab_widget)
 
-        self.stacked_widget = QStackedWidget(self)
+        self.__stacked_widget = QStackedWidget(self)
 
         widget = QWidget(self)
         widget.setLayout(main_layout)
-        self.stacked_widget.addWidget(widget)
-        self.stacked_widget.addWidget(self.user_profile)
+        self.__stacked_widget.addWidget(widget)
+        self.__stacked_widget.addWidget(self.user_profile)
 
         grid_layout = QGridLayout()
-        grid_layout.addWidget(self.stacked_widget)
+        grid_layout.addWidget(self.__stacked_widget)
         self.setLayout(grid_layout)
 
     def header(self):
@@ -61,7 +61,12 @@ class UserHomePage(QWidget):
         main_layout.addLayout(profile_layout)
         main_layout.addWidget(self.sold_label)
 
-        return header
+        connect = QPushButton('Se connecter')
+        # login
+        connect.clicked.connect(lambda: self.main_window.initialize())
+        Lab.set_size_policy_fixed(connect)
+
+        return header if UserProfile.account_id else connect
 
     def set_username(self, username):
         self.username_label.setText(f'<a style="text-decoration:none;color:black;" href="#">{username}</a>')
@@ -70,10 +75,10 @@ class UserHomePage(QWidget):
         self.sold_label.setText('Sold : ' + str(sold))
 
     def open_profile(self):
-        self.stacked_widget.setCurrentIndex(1)
+        self.__stacked_widget.setCurrentIndex(1)
 
-    def back_to_login(self):
-        self.login_window.initialize()
+    def logout(self):
+        self.main_window.initialize()
 
-    def initialize(self):
-        self.stacked_widget.setCurrentIndex(0)
+    def home(self):
+        self.__stacked_widget.setCurrentIndex(0)

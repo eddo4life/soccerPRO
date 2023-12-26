@@ -17,9 +17,9 @@ class BaseWidget(QWidget):
 
     def add_widget(self, widget):
         if self.layout.count() % 2 == 0:
-            widget.setStyleSheet('background-color:rgb(253,253,253)')
+            widget.setStyleSheet('background-color:rgb(255,255,255)')
         else:
-            widget.setStyleSheet('background-color:rgb(247,247,247)')
+            widget.setStyleSheet('background-color:rgb(225,225,225)')
         self.layout.addWidget(widget)
 
     def remove_widget(self, widget):

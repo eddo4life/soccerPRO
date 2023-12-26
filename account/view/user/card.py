@@ -9,7 +9,8 @@ class Card(QWidget):
     def __init__(self, status):
         super().__init__()
         vbox = QVBoxLayout()
-        for counter, d in enumerate(UserEventModel.load_data_for(status)):  # gather data for full events (mathes and bet)
+        for counter, d in enumerate(
+                UserEventModel.load_data_for(status)):  # gather data for full events (mathes and bet)
             vbox.addWidget(self.card(counter, d))
 
         scroll_area = QScrollArea()

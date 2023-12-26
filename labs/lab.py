@@ -1,8 +1,9 @@
 import uuid
 from datetime import datetime
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QSizePolicy
+from PyQt5.QtWidgets import QSizePolicy, QHBoxLayout, QWidget
 
 
 class Lab:
@@ -37,6 +38,17 @@ class Lab:
     def set_size_policy_fixed(widget):
         size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         widget.setSizePolicy(size_policy)
+
+    def get_centered_layout(layout, w=500, h=250):
+        layout.setSpacing(20)
+        container_widget = QWidget()
+        # container_widget.setStyleSheet("background-color: rgb(250,250,250);")
+        container_widget.setLayout(layout)
+        container_widget.setFixedSize(w, h)
+        # Centered Layout
+        center_layout = QHBoxLayout()
+        center_layout.addWidget(container_widget, alignment=Qt.AlignmentFlag.AlignCenter)
+        return center_layout
 
     @staticmethod
     def get_icon(name):

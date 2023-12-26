@@ -1,5 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QLabel, QPushButton, QTabWidget, QWidget, QTableWidget, \
-    QAbstractItemView
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QLabel, QPushButton, QTabWidget, QWidget
 
 from account.view.admin.match import Matches
 from account.view.admin.rechargement import Reload
@@ -7,9 +6,9 @@ from labs.lab import Lab
 
 
 class AdminHomePage(QMainWindow):
-    def __init__(self, login_window=None):
+    def __init__(self, main_window=None):
         super().__init__()
-        self.login_window = login_window
+        self.main_window = main_window
 
         self.central_widget = QWidget(self)
         self.setCentralWidget(self.central_widget)
@@ -48,6 +47,5 @@ class AdminHomePage(QMainWindow):
             '''
         )
 
-
     def disconnect(self):
-        self.login_window.initialize()
+        self.main_window.initialize()

@@ -84,15 +84,15 @@ class UserProfileModel:
     def set_sold(self, sold):
         self.__sold = sold
 
-    def retrieve_data(self, id_user):
+    def retrieve_data(self, user_id, user_password):
         conn = DatabaseConnector()
         conn.connect()
         # Create a cursor
         cursor = conn.get_con().cursor()
 
         # Execute the query
-        query = "SELECT * FROM parieur WHERE telephone = %s or username = %s LIMIT 1;"
-        cursor.execute(query, (id_user, id_user))
+        query = "SELECT * FROM parieur WHERE telephone = %s or username = %s and mot_de_passe=%s LIMIT 1;"
+        cursor.execute(query, (user_id, user_id, user_password))
 
         # Fetch the result
         result = cursor.fetchone()
@@ -174,6 +174,25 @@ class UserProfileModel:
 
             cursor.execute(query, value)
             print('query executed')
+            conn.get_con().commit()
+            print("Data successfully updated.")
+        except Exception as err:
+            print(f"Error: {err}")
+
+        if conn.get_con().is_connected():
+            conn.get_con().close()
+
+    @staticmethod
+    def reset_password(password, nif_cin, telephone):
+        conn = DatabaseConnector()
+        conn.connect()
+        cursor = conn.get_con().cursor(prepared=True)
+        try:
+            query = """
+                    UPDATE parieur SET mot_de_passe=%s WHERE nif_cin =%s and telephone=%s
+                """
+            value = (password, nif_cin, telephone)
+            cursor.execute(query, value)
             conn.get_con().commit()
             print("Data successfully updated.")
         except Exception as err:

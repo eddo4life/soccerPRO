@@ -5,7 +5,15 @@ from account.model.userprofilemodel import UserProfileModel
 
 class UserProfile(QWidget):
     account_id = None
-    id_user = None
+    user_id = None
+    user_password = None
+
+    @classmethod
+    def init_credentials(cls, telephone, password):
+        print(telephone)
+        print(password)
+        UserProfile.user_id = telephone
+        UserProfile.user_password = password
 
     def __init__(self, home):
         super().__init__()
@@ -53,24 +61,24 @@ class UserProfile(QWidget):
         back_button = QPushButton('Back')
         back_button.clicked.connect(self.back_home)
         logout_button = QPushButton('Logout')
-        logout_button.clicked.connect(self.logout)
+        logout_button.clicked.connect(lambda: self.home.logout())
         hbox.addWidget(update_button, 1)
         hbox.addWidget(back_button, 1)
         hbox.addWidget(logout_button, 1)
         form.addRow('Action', hbox)
 
-    def logout(self):
-        self.home.back_to_login()
+    # def logout(self):
+    #     self.home.logout()
 
     def back_home(self):
-        self.home.initialize()
+        self.home.home()
 
     def save(self):
         ...
 
     def update_values(self):
 
-        self.upm.retrieve_data(UserProfile.id_user)
+        self.upm.retrieve_data(UserProfile.user_id, UserProfile.user_password)
 
         UserProfile.account_id = self.upm.get_account_id()
         self.username_input.setText(self.upm.get_username())
@@ -93,5 +101,4 @@ class UserProfile(QWidget):
         return self.upm.get_sold()
 
     def get_user_name(self):
-
         return self.upm.get_username()
