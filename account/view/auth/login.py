@@ -54,8 +54,8 @@ class LoginWindow(QWidget):
 
     def init_ui(self):
         # Create widgets
-        self.id_entry = QLineEdit('swhite')
-        self.password_entry = QLineEdit('1234')
+        self.id_entry = QLineEdit('Eddo4life')
+        self.password_entry = QLineEdit('password')
         self.password_entry.setEchoMode(QLineEdit.Password)  # To hide the password input
         self.forgot_password_label = QLabel('<a href="#">Forgot Password?</a>')
         self.forgot_password_label.linkActivated.connect(self.show_forgot_password_step)

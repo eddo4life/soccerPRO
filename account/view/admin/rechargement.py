@@ -13,7 +13,6 @@ class Reload(QWidget):
         self.formulaire()
         self.tableview()
         self.setLayout(self.hbLayout)
-        self.load_data()
 
     def formulaire(self):
         self.form = QFormLayout()
@@ -28,6 +27,7 @@ class Reload(QWidget):
         self.txt_prenom.setDisabled(True)
         self.new_sold = QLineEdit()
         self.new_sold.setValidator(QDoubleValidator())
+        self.new_sold.setPlaceholderText('Min(10)')
 
         self.bt_reload = QPushButton("Recharger")
         self.bt_reload.clicked.connect(self.reload)
@@ -48,12 +48,12 @@ class Reload(QWidget):
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         header = ["ID", "PSEUDO", "NOM", "PRENOM", "SEXE", "TELEPHONE", "ADRESSE", "SOLDE", "ETAT"]
         self.table.setColumnCount(len(header))
-        self.table.setRowCount(0)
         self.table.setAlternatingRowColors(True)
         self.table.setHorizontalHeaderLabels(header)
         self.table.verticalHeader().setVisible(False)
         self.hbLayout.addWidget(self.table)
         self.hbLayout.setStretchFactor(self.table, 3)
+        self.load_data()
 
     def handle_table_click(self, item):
         selected_row = item.row()
@@ -67,6 +67,7 @@ class Reload(QWidget):
                 self.txt_prenom.setText(first_name.text())
 
     def load_data(self):
+        self.table.setRowCount(0)
         data = UserProfileModel.get_all()
         if data:
             for row_number, row_data in enumerate(data):
@@ -76,8 +77,19 @@ class Reload(QWidget):
                     self.table.setItem(row_number, column_number, item)
 
     def reload(self):
-        sold = float(self.new_sold.text())
-        if sold >= 10:
-            UserProfileModel.update_sold(self.account_id.text(), sold)
+        if self.account_id.text():
+            sold = self.new_sold.text().strip()
+            if sold:
+                sold = float(sold)
+                if sold >= 10:
+                    UserProfileModel.update_sold(self.account_id.text(), sold)
+                    self.load_data()
+                    # clear the solde line edit
+                    self.new_sold.setText('')
+
+                else:
+                    QMessageBox.warning(None, "Echec", 'Le montant doit etre >=10', QMessageBox.Ok)
+            else:
+                QMessageBox.warning(None, "Echec", 'Veuillez saisir un montant valide', QMessageBox.Ok)
         else:
-            QMessageBox.warning(None, "Echec", 'Le montant doit etre >=10', QMessageBox.Ok)
+            QMessageBox.warning(None, "Echec", 'Veuillez selectionner un utilisateur', QMessageBox.Ok)

@@ -10,7 +10,7 @@ class Card(QWidget):
         super().__init__()
         vbox = QVBoxLayout()
         for counter, d in enumerate(
-                UserEventModel.load_data_for(status)):  # gather data for full events (mathes and bet)
+                UserEventModel.load_data_for(status)):  # gather data for full events (matches and bet)
             vbox.addWidget(self.card(counter, d))
 
         scroll_area = QScrollArea()
@@ -50,7 +50,7 @@ class Card(QWidget):
         vbox.addLayout(top_hbox)
         vbox.addWidget(QLabel(country_championship))
         middle_hbox = QHBoxLayout()
-        # middle_hbox.addWidget(QLabel('Cote ' + str(hcm.get_cote())))
+
         middle_hbox.addWidget(QLabel(
             'Cote ' + str(hcm.get_cote()) + ' - Bet price ' + str(hcm.get_bet_price()) + ' - Reward ' + str(
                 hcm.get_reward())))
@@ -68,12 +68,8 @@ class Card(QWidget):
         vbox.addLayout(bottom_hbox)
 
         """
-        other things
+        other informations can be added to the card :(
         """
-        # bottom = dic['pred score 1'] + " - " + dic['pred score 2']
-
-        # vbox.addWidget(QLabel(bottom))
-        # vbox.addWidget(QLabel('prediction ' + bottom))
 
         wdg.setLayout(vbox)
 

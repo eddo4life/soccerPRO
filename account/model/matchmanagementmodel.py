@@ -59,7 +59,7 @@ class MatchManagementModel:
             query = """
                           UPDATE matches SET  
                           type_de_match=%s, pays=%s, date_match=%s, heure_match=%s, equipe_receveuse=%s, equipe_visiteuse=%s, cote=%s, score_final=%s, etat=%s 
-                          WHERE id=%s
+                          WHERE id=%s and etat!='t' 
                       """
             value = (self.__type_de_match, self.__pays, self.__date_match, self.__heure_match, self.__equipe_receveuse,
                      self.__equipe_visiteuse, self.__cote, self.__score_final, self.__etat, self.id_match)

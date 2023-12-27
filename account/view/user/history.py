@@ -9,7 +9,6 @@ class HistoryTabs(QTabWidget):
         super().__init__()
         self.addTab(self.pending(), Lab.get_icon('wait.png'), 'in progress')
         self.addTab(self.won(), Lab.get_icon('won.png'), 'won')
-
         self.addTab(self.lost(), Lab.get_icon('lose.png'), 'Lost')
 
     def pending(self):

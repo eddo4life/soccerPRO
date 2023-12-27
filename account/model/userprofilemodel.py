@@ -131,7 +131,7 @@ class UserProfileModel:
         datas = []
         try:
             with conn.get_con().cursor() as cursor:
-                query = "SELECT code,username,nom,prenom,sexe,telephone,adresse,solde,etat FROM parieur where etat!='S'"
+                query = "SELECT code,username,nom,prenom,sexe,telephone,adresse,solde,etat FROM parieur where etat='A'"
                 cursor.execute(query)
                 datas.extend(cursor.fetchall())
         except Exception as e:
@@ -212,7 +212,6 @@ class UserProfileModel:
         try:
             query = "UPDATE parieur SET solde=solde+%s WHERE code=%s"
             value = (new_amount, account_id)
-
             cursor.execute(query, value)
             conn.get_con().commit()
         except Exception as err:

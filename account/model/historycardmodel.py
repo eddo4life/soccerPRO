@@ -15,7 +15,7 @@ class HistoryCardModel(BetCardModel):
         return self.__current_score
 
     def __calculate_reward(self):
-        self.__reward = float(self.__bet_price) * float(self.get_cote())
+        self.__reward = round(float(self.__bet_price) * float(self.get_cote()), 2)
 
     def get_predicted_score(self):
         return self.__predicted_score
@@ -42,5 +42,3 @@ class HistoryCardModel(BetCardModel):
             return 'Terminé'
         elif stat == 't':
             return 'Annulé'
-
-#         N : Non Encore Joue, E: En cours, T : Terminé, A: Annulé, S :Supprimé

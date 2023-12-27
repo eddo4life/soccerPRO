@@ -192,7 +192,6 @@ class Matches(QWidget):
         header = ["ID", "TYPE DE MATCH", "PAYS", "DATE", "HEURE", "EQUPE RECEVEUSE", "EQUIPE VISITEUSE", "COTE",
                   "SCORE", "ETAT"]
         self.table.setColumnCount(len(header))
-        self.table.setRowCount(0)
         self.table.setAlternatingRowColors(True)
         self.table.setHorizontalHeaderLabels(header)
         self.table.verticalHeader().setVisible(False)

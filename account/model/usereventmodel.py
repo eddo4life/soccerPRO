@@ -17,9 +17,9 @@ class UserEventModel:
     def load_pending_events():
         # encours ou non encore joue
         query = """
-                    SELECT * FROM pariage JOIN matches ON pariage.id_match = matches.id WHERE matches.etat = 'e' or matches.etat = 'n' and pariage.id_compte=%s;
+                    SELECT * FROM pariage JOIN matches ON pariage.id_match = matches.id WHERE (matches.etat = 'e' or matches.etat = 'n') and pariage.id_compte=%s;
                     """
-
+        print('called once')
         return UserEventModel.load(query)
 
     @staticmethod

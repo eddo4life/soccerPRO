@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QStackedWidget, QMainWindow, QDesktopWidget
+from PyQt5.QtWidgets import QStackedWidget, QMainWindow, QDesktopWidget, QWidget
 
 from account.view.admin.homepage import AdminHomePage
 from account.view.auth.forgotpassword import ForgotPassword
@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         self.__stacked_widget.addWidget(SignUpForm(self))
 
         # Step 3: User home page
-        self.__stacked_widget.addWidget(UserHomePage(self))
+        self.__stacked_widget.addWidget(QWidget())
 
         # Step 4: Admin home page
         self.__stacked_widget.addWidget(AdminHomePage(self))

@@ -22,9 +22,8 @@ def unselect_checkbox(widget, target_text='placer'):
 
 
 class Event(BaseWidget):
-    def __init__(self):
+    def __init__(self, home):
         super().__init__()
-        self.bcm_event_list = []
         self.bcm_selected_event_list = []
 
         for d in UserEventModel.load():  # gather data only for events
@@ -35,11 +34,11 @@ class Event(BaseWidget):
         main_layout = QHBoxLayout(self)
         main_layout.addWidget(self.scroll_area)
 
-        main_layout.setStretchFactor(self.scroll_area, 2)  # give more space to the events
+        main_layout.setStretchFactor(self.scroll_area, 6)  # give more space to the events
 
         # manage ticket class
 
-        self.ticket = Ticket(self.bcm_selected_event_list)
+        self.ticket = Ticket(self.bcm_selected_event_list, home)
         # add action for clearing the ticket
         self.ticket.clear_btn.clicked.connect(self.clear_ticket)
 
@@ -51,7 +50,7 @@ class Event(BaseWidget):
         ticket_widgets = QWidget()
         ticket_widgets.setLayout(main_layout_ticket)
         main_layout.addWidget(ticket_widgets)
-        main_layout.setStretchFactor(ticket_widgets, 1)
+        main_layout.setStretchFactor(ticket_widgets, 4)
 
         self.setLayout(main_layout)
 
@@ -116,11 +115,6 @@ class Event(BaseWidget):
         vbox.addWidget(chb)
         wdg.setLayout(vbox)
         chb.clicked.connect(lambda: self.add_remove(chb, wdg, bcm))
-        # set the widget as unique id for the id card model (no need perhaps...), if validation process is failed,
-        # we show the card
-        bcm.set_id_card(wdg)
-        # # add that model to the list or card ('event')
-        self.bcm_event_list.append(bcm)
 
         return wdg
 
@@ -136,6 +130,8 @@ class Event(BaseWidget):
             self.add_widget(card)  # add back to the event list
 
     def clear_ticket(self):
+        # clear the list
+        self.bcm_selected_event_list.clear()
         # Remove and delete all items from the layout
         layout = self.ticket.layout
         while layout.count():
@@ -147,8 +143,10 @@ class Event(BaseWidget):
 
 
 class Ticket(BaseWidget):
-    def __init__(self, event_list):
+    def __init__(self, event_list, home):
         super().__init__()
+        # that home instance from the home page will help us to update the sold label
+        self.home = home
         # gather an instance from the event, for the selected event list
         self.event_list = event_list
         self.clear_btn = QPushButton('clear')
@@ -167,6 +165,16 @@ class Ticket(BaseWidget):
 
     def validate(self):
         if self.event_list:
-            BetModel(self.event_list).save()
+            if UserProfile.user_status[0] == 'A':  # check if the account is active
+                res = BetModel().save_events(self.event_list)
+                if type(res) == bool:
+                    self.home.set_sold(UserProfile.user_fund)
+                    QMessageBox.information(None, "Success", 'Paris effectue avec success', QMessageBox.Ok)
+                    # revalidate the history tab
+                    self.home.revalidate_history_tab()
+                else:
+                    QMessageBox.warning(None, "Echec", res, QMessageBox.Ok)
+            else:
+                QMessageBox.warning(None, "Compte inactif", 'Veuillez reactiver votre compte!', QMessageBox.Ok)
         else:
-            QMessageBox.warning(None, "", 'Veuillez placer au moins un paris!', QMessageBox.Ok)
+            QMessageBox.warning(None, "Panier vide", 'Veuillez placer au moins un paris!', QMessageBox.Ok)

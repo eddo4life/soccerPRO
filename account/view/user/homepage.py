@@ -22,14 +22,14 @@ class UserHomePage(QWidget):
 
     def init_ui(self):
         # Create the event tab
-        tab_widget = QTabWidget()
-        tab_widget.addTab(Event(), Lab.get_icon('event.png'), "Events")
-        tab_widget.addTab(HistoryTabs(), Lab.get_icon('history.png'), "History")
+        self.tab_widget = QTabWidget()
+        self.tab_widget.addTab(Event(self), Lab.get_icon('event.png'), "Events")
+        self.tab_widget.addTab(HistoryTabs(), Lab.get_icon('history.png'), "History")
 
         # Main vertical layout
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.header())
-        main_layout.addWidget(tab_widget)
+        main_layout.addWidget(self.tab_widget)
 
         self.__stacked_widget = QStackedWidget(self)
 
@@ -41,6 +41,10 @@ class UserHomePage(QWidget):
         grid_layout = QGridLayout()
         grid_layout.addWidget(self.__stacked_widget)
         self.setLayout(grid_layout)
+
+    def revalidate_history_tab(self):
+        self.tab_widget.removeTab(1)
+        self.tab_widget.addTab(HistoryTabs(), Lab.get_icon('history.png'), "History")
 
     def header(self):
         # Create components

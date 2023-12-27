@@ -1,6 +1,5 @@
 class BetCardModel:
     def __init__(self, dic):
-        self.__id_card = None  # to be removed
         self.__match_id = dic['id']
         self.__home_team = dic['equipe_receveuse']
         self.__away_team = dic['equipe_visiteuse']
@@ -11,9 +10,6 @@ class BetCardModel:
         self.__amount = None
         self.__score_away_team = None
         self.__score_home_team = None
-
-    def get_id_card(self):
-        return self.__id_card
 
     def get_id_match(self):
         return self.__match_id
@@ -44,9 +40,6 @@ class BetCardModel:
 
     def get_amount(self):
         return self.__amount
-
-    def set_id_card(self, card):
-        self.__id_card = card
 
     def set_amount(self, amount):
         self.__amount = amount

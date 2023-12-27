@@ -8,9 +8,12 @@ from labs.lab import Lab
 
 
 class UserProfile(QWidget):
+    # some important credentials
+    user_fund = None
     account_id = None
     user_name = None
     user_password = None
+    user_status = None
 
     @classmethod
     def init_credentials(cls, telephone, password):
@@ -19,7 +22,6 @@ class UserProfile(QWidget):
 
     def __init__(self, home):
         super().__init__()
-        self.status = None
         self.upm = None
         self.home = home
         self.profile()
@@ -186,7 +188,7 @@ class UserProfile(QWidget):
                                    first_name=first_name,
                                    address=address, telephone=telephone, nif_cin=nif_cin,
                                    password=UserProfile.user_password,
-                                   status=self.status[0].upper())
+                                   status=UserProfile.user_status[0].upper())
             upm.update()
             # reload
             self.update_values()
@@ -225,15 +227,16 @@ class UserProfile(QWidget):
                     self.profile_pic.setPixmap(Lab.get_icon('woman.png').pixmap(255, 250))
 
         # retrieve the current status
-        self.status = self.find_status(self.upm.get_status())
+        UserProfile.user_status = self.find_status(self.upm.get_status())
         # set the current state of the account to the combobox
-        index = self.account_status_box.findText(self.status)
+        index = self.account_status_box.findText(UserProfile.user_status)
         if index != -1:
             self.account_status_box.setCurrentIndex(index)
 
         self.telephone_input.setText(self.upm.get_telephone())
         self.address_input.setText(self.upm.get_address())
         self.nif_cin_input.setText(self.upm.get_nif_cin())
+        UserProfile.user_fund = self.upm.get_sold()
 
     def find_status(self, stat):
         if stat:
@@ -244,13 +247,13 @@ class UserProfile(QWidget):
                 return 'Fermer'
 
     def update_status(self):
-        if self.status:
+        if UserProfile.user_status:
             # retrieve the initial index
-            index = self.account_status_box.findText(self.status)
+            index = self.account_status_box.findText(UserProfile.user_status)
             # keep track of the selected status
-            self.status = self.account_status_box.currentText()
+            UserProfile.user_status = self.account_status_box.currentText()
 
-            if self.status[0].upper() == 'S':
+            if UserProfile.user_status[0].upper() == 'S':
                 if ConfirmDialog.confirmed('Suprression du compte est definitive, voulez-vous continuer? '):
                     # dete the account
                     UserProfileModel.delete_account(UserProfile.account_id)
