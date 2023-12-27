@@ -7,6 +7,9 @@ from account.model.userprofilemodel import UserProfileModel
 
 class Reload(QWidget):
     def __init__(self):
+        """
+        Constructor for the Reload widget.
+        """
         super().__init__()
         self.hbLayout = QHBoxLayout()
 
@@ -15,6 +18,9 @@ class Reload(QWidget):
         self.setLayout(self.hbLayout)
 
     def formulaire(self):
+        """
+        Set up the form layout for user input.
+        """
         self.form = QFormLayout()
         self.account_id = QLineEdit()
         self.account_id.setPlaceholderText("ID")
@@ -42,6 +48,9 @@ class Reload(QWidget):
         self.hbLayout.setStretchFactor(self.form, 1)
 
     def tableview(self):
+        """
+        Set up the table view for displaying user data.
+        """
         self.table = QTableWidget()
         self.table.clicked.connect(self.handle_table_click)
         # Set the table as not editable
@@ -56,6 +65,9 @@ class Reload(QWidget):
         self.load_data()
 
     def handle_table_click(self, item):
+        """
+        Handle clicks on the table rows to populate the form fields.
+        """
         selected_row = item.row()
         if selected_row >= 0:
             code = self.table.item(selected_row, 0)
@@ -67,6 +79,9 @@ class Reload(QWidget):
                 self.txt_prenom.setText(first_name.text())
 
     def load_data(self):
+        """
+        Load user data into the table view.
+        """
         self.table.setRowCount(0)
         data = UserProfileModel.get_all()
         if data:
@@ -77,6 +92,9 @@ class Reload(QWidget):
                     self.table.setItem(row_number, column_number, item)
 
     def reload(self):
+        """
+        Reload user funds based on user input.
+        """
         if self.account_id.text():
             sold = self.new_sold.text().strip()
             if sold:
@@ -84,12 +102,11 @@ class Reload(QWidget):
                 if sold >= 10:
                     UserProfileModel.update_sold(self.account_id.text(), sold)
                     self.load_data()
-                    # clear the solde line edit
+                    # Clear the solde line edit
                     self.new_sold.setText('')
-
                 else:
-                    QMessageBox.warning(None, "Echec", 'Le montant doit etre >=10', QMessageBox.Ok)
+                    QMessageBox.warning(None, "Echec", 'Le montant doit être >=10', QMessageBox.Ok)
             else:
                 QMessageBox.warning(None, "Echec", 'Veuillez saisir un montant valide', QMessageBox.Ok)
         else:
-            QMessageBox.warning(None, "Echec", 'Veuillez selectionner un utilisateur', QMessageBox.Ok)
+            QMessageBox.warning(None, "Echec", 'Veuillez sélectionner un utilisateur', QMessageBox.Ok)

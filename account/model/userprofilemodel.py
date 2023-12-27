@@ -26,7 +26,6 @@ class UserProfileModel:
     def set_username(self, username):
         self.__username = username
 
-    # Getter and Setter for name
     def get_name(self):
         return self.__name
 
@@ -43,28 +42,24 @@ class UserProfileModel:
     def set_account_id(self, account_id):
         self.__account_id = account_id
 
-    # Getter and Setter for first_name
     def get_first_name(self):
         return self.__first_name
 
     def set_first_name(self, first_name):
         self.__first_name = first_name
 
-    # Getter and Setter for address
     def get_address(self):
         return self.__address
 
     def set_address(self, address):
         self.__address = address
 
-    # Getter and Setter for telephone
     def get_telephone(self):
         return self.__telephone
 
     def set_telephone(self, telephone):
         self.__telephone = str(telephone)
 
-    # Getter and Setter for nif_cin
     def get_nif_cin(self):
         return self.__nif_cin
 
@@ -138,8 +133,7 @@ class UserProfileModel:
             print(f'Exception: {e}')
 
         finally:
-            if conn:
-                conn.get_con().close()
+            conn.disconnect()
         return datas
 
     def valid_data(self):
@@ -164,8 +158,8 @@ class UserProfileModel:
         except Exception as err:
             print(f"Error: {err}")
 
-        if conn.get_con().is_connected():
-            conn.get_con().close()
+        finally:
+            conn.disconnect()
 
     # update profile
     def update(self):
@@ -185,8 +179,8 @@ class UserProfileModel:
         except Exception as err:
             print(f"Error: {err}")
 
-        if conn.get_con().is_connected():
-            conn.get_con().close()
+        finally:
+            conn.disconnect()
 
     @staticmethod
     def delete_account(code):
@@ -201,8 +195,8 @@ class UserProfileModel:
         except Exception as err:
             print(f"Error: {err}")
 
-        if conn.get_con().is_connected():
-            conn.get_con().close()
+        finally:
+            conn.disconnect()
 
     @staticmethod
     def update_sold(account_id, new_amount):
@@ -217,8 +211,8 @@ class UserProfileModel:
         except Exception as err:
             print(f"Error: {err}")
 
-        if conn.get_con().is_connected():
-            conn.get_con().close()
+        finally:
+            conn.disconnect()
 
     @staticmethod
     def reset_password(password, nif_cin, telephone):
@@ -237,7 +231,6 @@ class UserProfileModel:
                 return False
         except Exception as err:
             print(f"Error: {err}")
-
-        if conn.get_con().is_connected():
-            conn.get_con().close()
+        finally:
+            conn.disconnect()
         return True

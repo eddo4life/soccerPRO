@@ -1,21 +1,28 @@
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QComboBox, \
     QStackedWidget, QTreeWidget, QTreeWidgetItem, QTextEdit, QHBoxLayout, QMessageBox
 
 from account.model.userprofilemodel import UserProfileModel
-from account.view.user.profile.userprofile import UserProfile
 from labs.lab import Lab
 
 
 class SignUpForm(QWidget):
     def __init__(self, main_window=None):
+        """
+        Constructor for SignUpForm widget.
+
+        :param main_window: Reference to the main window, usually a MainWindow instance.
+        """
         super().__init__()
 
-        # Reference to the LoginWindow
         self.__main_window = main_window
         self.init_ui()
 
     def init_ui(self):
+        """
+        Initialize the user interface components for the sign-up form.
+        """
         self.layout = QVBoxLayout()
         # Create a tree widget for the progress indicator
         self.tree_widget = QTreeWidget(self)
@@ -51,8 +58,10 @@ class SignUpForm(QWidget):
         step2_widget = QWidget(self)
         layout2 = QFormLayout(step2_widget)
         self.telephone_input = QLineEdit()
+        self.telephone_input.setValidator(QIntValidator())
         self.address_input = QTextEdit()
         self.nif_cin_input = QLineEdit()
+        self.nif_cin_input.setValidator(QIntValidator())
 
         layout2.addRow("Telephone:", self.telephone_input)
         layout2.addRow("Address:", self.address_input)
@@ -104,6 +113,9 @@ class SignUpForm(QWidget):
         self.setLayout(Lab.get_centered_layout(self.layout, 1000, 700))
 
     def update_tree(self):
+        """
+        Update the visual indication of the sign-up progress in the tree widget.
+        """
         for i, item in enumerate(self.tree_items):
             if i == self.current_step:
                 item.setCheckState(0, 2)  # Checked state
@@ -113,21 +125,36 @@ class SignUpForm(QWidget):
                 item.setCheckState(0, 0)  # Unchecked state
 
     def next_step(self):
+        """
+        Move to the next step in the sign-up process.
+        """
         if self.current_step < self.stacked_widget.count() - 1:
             self.current_step += 1
             self.stacked_widget.setCurrentIndex(self.current_step)
             self.update_tree()
 
     def prev_step(self):
+        """
+        Move to the previous step in the sign-up process.
+        """
         if self.current_step > 0:
             self.current_step -= 1
             self.stacked_widget.setCurrentIndex(self.current_step)
             self.update_tree()
 
     def back_to_login(self):
+        """
+        Go back to the login screen when the user cancels the sign-up process.
+        """
         self.__main_window.initialize()
 
     def sign_up(self):
+        """
+        Process the user's sign-up request and save the entered information.
+
+        If the entered information is valid, the user is signed up, and the main window is updated accordingly.
+        Otherwise, an error message is displayed.
+        """
         # Retrieving and cleaning information:
         name = self.name_input.text().upper().strip()
         first_name = self.first_name_input.text().title().strip()
@@ -143,7 +170,7 @@ class SignUpForm(QWidget):
 
         if upm.valid_data():
             upm.save()
-            UserProfile.init_credentials(telephone, password)  # automatically login with telephone and password
-            self.__main_window.login()
+            # automatically login with telephone and password
+            self.__main_window.login(telephone, password)
         else:
             QMessageBox.warning(None, "Denied", 'Toutes les informations sont requises!', QMessageBox.Ok)

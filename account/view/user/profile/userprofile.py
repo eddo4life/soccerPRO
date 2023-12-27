@@ -8,7 +8,7 @@ from labs.lab import Lab
 
 
 class UserProfile(QWidget):
-    # some important credentials
+    # Class variables for storing user credentials
     user_fund = None
     account_id = None
     user_name = None
@@ -17,10 +17,32 @@ class UserProfile(QWidget):
 
     @classmethod
     def init_credentials(cls, telephone, password):
+        """
+        Initializes user credentials.
+
+        Parameters:
+        - telephone: str
+            User's telephone number.
+        - password: str
+            User's password.
+
+        Returns:
+        None
+        """
         UserProfile.user_name = telephone
         UserProfile.user_password = password
 
     def __init__(self, home):
+        """
+        Initializes the UserProfile widget.
+
+        Parameters:
+        - home: QWidget
+            The main window or parent widget.
+
+        Returns:
+        None
+        """
         super().__init__()
         self.upm = None
         self.home = home
@@ -28,7 +50,12 @@ class UserProfile(QWidget):
         self.update_values()
 
     def profile(self):
+        """
+        Creates the profile layout.
 
+        Returns:
+        None
+        """
         main_layout = QVBoxLayout(self)
 
         h_separator = QFrame()
@@ -37,7 +64,7 @@ class UserProfile(QWidget):
 
         header_layout = QVBoxLayout()
         main_layout.addLayout(header_layout)
-        header_layout.addWidget(QLabel('<h2>Informations personelles</h2>'))
+        header_layout.addWidget(QLabel('<h2>Informations personnelles</h2>'))
         header_layout.addWidget(h_separator)
 
         content_layout = QHBoxLayout()
@@ -53,21 +80,19 @@ class UserProfile(QWidget):
 
         pic_layout.addWidget(self.name_label)
 
-        # add delete or closed account
         dc = QFormLayout()
         self.account_status_box = QComboBox()
         self.account_status_box.currentIndexChanged.connect(self.update_status)
         self.account_status_box.addItems(['Actif', 'Fermer', 'Supprimer'])
+        Lab.set_size_policy_fixed(self.account_status_box)
         dc.addRow('Mon compte :', self.account_status_box)
         pic_layout.addLayout(dc)
 
         background = QWidget()
         background.setStyleSheet("""
         background-color: rgba(255, 255, 255, 0.5);
-        """
-                                 )
+        """)
 
-        # Add vertical separator
         v_separator = QFrame()
         v_separator.setFrameShape(QFrame.VLine)
         v_separator.setFrameShadow(QFrame.Sunken)
@@ -76,7 +101,7 @@ class UserProfile(QWidget):
 
         content_layout.addWidget(background)
         content_layout.addWidget(v_separator)
-        # form to show the user's information
+
         form = QFormLayout()
         form.setSpacing(10)
         form.setAlignment(Qt.AlignTop)
@@ -86,6 +111,7 @@ class UserProfile(QWidget):
         content_layout.setStretchFactor(background, 1)
         content_layout.setStretchFactor(form, 4)
 
+        # Input fields for user information
         self.username_input = QLineEdit()
         self.name_input = QLineEdit()
         self.first_name_input = QLineEdit()
@@ -108,7 +134,7 @@ class UserProfile(QWidget):
         form.addRow("Address:", self.address_input)
         form.addRow("NIF/CIN:", self.nif_cin_input)
         form.addRow("Old Password:", self.password_input)
-        form.addRow("new Password:", self.new_password_input)
+        form.addRow("New Password:", self.new_password_input)
         form.addRow("Confirm Password:", self.confirm_new_password_input)
 
         hbox = QHBoxLayout()
@@ -124,26 +150,44 @@ class UserProfile(QWidget):
         self.password_check_box = QCheckBox('Update password')
         self.password_check_box.clicked.connect(lambda: self.password_enablings(self.password_check_box.isChecked()))
         form.addRow(self.password_check_box, hbox)
-        self.feed_back_label = QLabel('feed back')
-        self.feed_back_label.setFixedHeight(25)
-        # form.addRow(self.feed_back_label)
 
         self.setStyleSheet("""
         QLineEdit { height: 30px; }
         """)
 
-        #     disable passwords fields by default
         self.password_enablings(False)
 
     def password_enablings(self, is_enabled):
+        """
+        Enables or disables password-related input fields.
+
+        Parameters:
+        - is_enabled: bool
+            Whether to enable or disable the password input fields.
+
+        Returns:
+        None
+        """
         self.password_input.setEnabled(is_enabled)
         self.new_password_input.setEnabled(is_enabled)
         self.confirm_new_password_input.setEnabled(is_enabled)
 
     def back_home(self):
+        """
+        Returns to the home screen.
+
+        Returns:
+        None
+        """
         self.home.home()
 
     def retrieve_values(self):
+        """
+        Retrieves and processes user input values.
+
+        Returns:
+        None
+        """
         username = self.username_input.text().strip()
         name = self.name_input.text().upper().strip()
         first_name = self.first_name_input.text().title().strip()
@@ -158,13 +202,9 @@ class UserProfile(QWidget):
         tests_passed = True
 
         if self.password_check_box.isChecked():
-            # test if the old password is actually the same:
             if UserProfile.user_password == password:
-                # test if the password is well confirmed
                 if new_password == confirm_new_password:
-                    # assign the new password
                     UserProfile.user_password = new_password
-                    # clear fields
                     self.confirm_new_password_input.setText('')
                     self.new_password_input.setText('')
                     self.password_input.setText('')
@@ -176,13 +216,10 @@ class UserProfile(QWidget):
                                         QMessageBox.Ok)
             else:
                 tests_passed = False
-                self.feed_back_label.setText('Mot de passe incorrecte')
                 QMessageBox.warning(None, "Denied", 'Mot de passe incorrecte!', QMessageBox.Ok)
 
         if tests_passed:
-            # if ever the user name was changed
             UserProfile.user_name = username
-            # set up the model
             upm = UserProfileModel(account_id=UserProfile.account_id, username=UserProfile.user_name, name=name,
                                    sex=sex,
                                    first_name=first_name,
@@ -190,23 +227,31 @@ class UserProfile(QWidget):
                                    password=UserProfile.user_password,
                                    status=UserProfile.user_status[0].upper())
             upm.update()
-            # reload
             self.update_values()
 
     def save(self):
+        """
+        Saves user input values.
+
+        Returns:
+        None
+        """
         self.retrieve_values()
 
     def update_values(self):
+        """
+        Updates user information.
+
+        Returns:
+        None
+        """
         self.upm = UserProfileModel()
         self.upm.retrieve_data(UserProfile.user_name, UserProfile.user_password)
-        # store the account id
         UserProfile.account_id = self.upm.get_account_id()
 
         self.username_input.setText(self.upm.get_username())
-        # update the username at user home window
         self.home.set_username(self.upm.get_username())
 
-        # set the full name (username)
         self.name_label.setText('<h3>' +
                                 str(self.upm.get_name()) + ' ' + str(self.upm.get_first_name()) + ' (' + str(
             self.upm.get_username()) + ')</h3>')
@@ -215,7 +260,6 @@ class UserProfile(QWidget):
         self.first_name_input.setText(self.upm.get_first_name())
 
         self.sex_combobox.addItems(["M", "F"])
-        # Automatically select the value in the QComboBox that matches the sex from UserProfileModel
         current_sex = self.upm.get_sex()
         if current_sex in ["M", "F"]:
             index = self.sex_combobox.findText(current_sex)
@@ -226,9 +270,7 @@ class UserProfile(QWidget):
                 else:
                     self.profile_pic.setPixmap(Lab.get_icon('woman.png').pixmap(255, 250))
 
-        # retrieve the current status
         UserProfile.user_status = self.find_status(self.upm.get_status())
-        # set the current state of the account to the combobox
         index = self.account_status_box.findText(UserProfile.user_status)
         if index != -1:
             self.account_status_box.setCurrentIndex(index)
@@ -239,6 +281,17 @@ class UserProfile(QWidget):
         UserProfile.user_fund = self.upm.get_sold()
 
     def find_status(self, stat):
+        """
+        Converts a status code to a human-readable status.
+
+        Parameters:
+        - stat: str
+            The status code.
+
+        Returns:
+        str
+            The corresponding human-readable status.
+        """
         if stat:
             stat = stat.lower()
             if stat == 'a':
@@ -247,24 +300,39 @@ class UserProfile(QWidget):
                 return 'Fermer'
 
     def update_status(self):
+        """
+        Updates the user status.
+
+        Returns:
+        None
+        """
         if UserProfile.user_status:
-            # retrieve the initial index
             index = self.account_status_box.findText(UserProfile.user_status)
-            # keep track of the selected status
             UserProfile.user_status = self.account_status_box.currentText()
 
             if UserProfile.user_status[0].upper() == 'S':
-                if ConfirmDialog.confirmed('Suprression du compte est definitive, voulez-vous continuer? '):
-                    # dete the account
+                if ConfirmDialog.confirmed('Suppression du compte est définitive, voulez-vous continuer? '):
                     UserProfileModel.delete_account(UserProfile.account_id)
-                    # loging out
                     self.home.logout()
                 else:
-                    # set it to the initial state
                     self.account_status_box.setCurrentIndex(index)
 
     def get_sold(self):
+        """
+        Returns the user fund.
+
+        Returns:
+        float
+            The user fund.
+        """
         return self.upm.get_sold()
 
     def get_user_name(self):
+        """
+        Returns the username.
+
+        Returns:
+        str
+            The username.
+        """
         return self.upm.get_username()

@@ -26,8 +26,8 @@ class MatchManagementModel:
                 data = cursor.fetchall()
         except Exception as e:
             print(f'Exception: {e}')
-        if conn.get_con().is_connected():
-            conn.get_con().close()
+        finally:
+            conn.disconnect()
         return data
 
     def save(self):
@@ -48,8 +48,8 @@ class MatchManagementModel:
         except Exception as err:
             print(f"Error: {err}")
 
-        if conn.get_con().is_connected():
-            conn.get_con().close()
+        finally:
+            conn.disconnect()
 
     def update(self):
         conn = DatabaseConnector()
@@ -68,9 +68,8 @@ class MatchManagementModel:
             print("Data successfully updated.")
         except Exception as err:
             print(f"Error: {err}")
-
-        if conn.get_con().is_connected():
-            conn.get_con().close()
+        finally:
+            conn.disconnect()
 
     # Getter methods
 

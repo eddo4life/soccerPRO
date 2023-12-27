@@ -11,6 +11,18 @@ from account.view.user.profile.userprofile import UserProfile
 
 
 def unselect_checkbox(widget, target_text='placer'):
+    """
+    Unselects a checkbox with a specified target text within a given widget's layout.
+
+    Parameters:
+    - widget: QWidget
+        The widget containing the layout with checkboxes.
+    - target_text: str, optional (default='placer')
+        The target text of the checkbox to be unselected.
+
+    Returns:
+    None
+    """
     layout = widget.layout()
     for i in range(layout.count()):
         try:
@@ -23,48 +35,67 @@ def unselect_checkbox(widget, target_text='placer'):
 
 class Event(BaseWidget):
     def __init__(self, home):
+        """
+        Initializes the Event widget, displaying a list of events with associated information.
+
+        Parameters:
+        - home: QWidget
+            The main window or parent widget.
+
+        Returns:
+        None
+        """
         super().__init__()
         self.bcm_selected_event_list = []
 
-        for d in UserEventModel.load():  # gather data only for events
-            self.add_widget(self.card(d))  # using the add_widget method from the super class BaseWidget
+        # Populate the widget with events
+        for d in UserEventModel.load():
+            self.add_widget(self.card(d))
 
-        # add both event and ticket horizontally to the main layout
-
+        # Horizontal layout for events and tickets
         main_layout = QHBoxLayout(self)
         main_layout.addWidget(self.scroll_area)
+        main_layout.setStretchFactor(self.scroll_area, 2)
 
-        main_layout.setStretchFactor(self.scroll_area, 6)  # give more space to the events
-
-        # manage ticket class
-
+        # Ticket management
         self.ticket = Ticket(self.bcm_selected_event_list, home)
-        # add action for clearing the ticket
         self.ticket.clear_btn.clicked.connect(self.clear_ticket)
 
-        # create a main layout for tickets
+        # Vertical layout for tickets
         main_layout_ticket = QVBoxLayout()
         main_layout_ticket.addWidget(self.ticket.scroll_area)
         main_layout_ticket.addLayout(self.ticket.add_buttons())
-        # create a main widget for tickets
+
         ticket_widgets = QWidget()
         ticket_widgets.setLayout(main_layout_ticket)
         main_layout.addWidget(ticket_widgets)
-        main_layout.setStretchFactor(ticket_widgets, 4)
+        main_layout.setStretchFactor(ticket_widgets, 1)
 
         self.setLayout(main_layout)
 
     def card(self, dic):
+        """
+        Creates and returns a widget representing an event card with relevant information.
+
+        Parameters:
+        - dic: dict
+            The dictionary containing event data.
+
+        Returns:
+        QWidget
+        """
         bcm = BetCardModel(dic)
         wdg = QWidget()
         wdg.setFixedHeight(200)
-        # the main layout
+
+        # Main layout
         vbox = QVBoxLayout()
         top_hbox = QHBoxLayout()
+
         teams = bcm.get_home_team() + " - " + bcm.get_away_team()
         teams_label = QLabel('<h2>' + teams + '</h2>')
-
         time_label = QLabel("(" + bcm.get_time() + ")")
+
         top_hbox.addWidget(teams_label)
         top_hbox.addWidget(time_label)
         top_hbox.setAlignment(Qt.AlignLeft)
@@ -75,6 +106,7 @@ class Event(BaseWidget):
         vbox.addWidget(QLabel(country_championship))
         middle_hbox = QHBoxLayout()
         middle_hbox.addWidget(QLabel('cote ' + str(bcm.get_cote())))
+
         amount_edit = QLineEdit()
         amount_edit.setPlaceholderText('montant')
         amount_edit.setFixedSize(80, 25)
@@ -89,19 +121,14 @@ class Event(BaseWidget):
         score1.setValidator(QIntValidator())
         score1.setPlaceholderText(bcm.get_home_team()[0:3] + "(0)")
         score1.setFixedSize(80, 25)
+
         score2 = QLineEdit()
-        self.setStyleSheet(
-            """
-            QLineEdit{
-            border:None;
-            }
-            """
-        )
-        score2.setFixedSize(80, 25)
         score2.setValidator(QIntValidator())
         score2.setPlaceholderText(bcm.get_away_team()[0:3] + "(0)")
+        score2.setFixedSize(80, 25)
         score_label = QLabel('Scores :')
         score_label.setFixedSize(55, 25)
+
         bottom_hbox.addWidget(score_label)
         bottom_hbox.addWidget(score1)
         bottom_hbox.addWidget(score2)
@@ -110,7 +137,8 @@ class Event(BaseWidget):
         bottom_hbox.setAlignment(Qt.AlignLeft)
 
         vbox.addLayout(bottom_hbox)
-        # add unique checkbox to select a specific match
+
+        # Add unique checkbox to select a specific match
         chb = QCheckBox('Placer')
         vbox.addWidget(chb)
         wdg.setLayout(vbox)
@@ -119,62 +147,102 @@ class Event(BaseWidget):
         return wdg
 
     def add_remove(self, chb, card, bcm):
+        """
+        Adds or removes an event card based on checkbox state, and updates the ticket.
 
+        Parameters:
+        - chb: QCheckBox
+            The checkbox associated with the event card.
+        - card: QWidget
+            The event card widget.
+        - bcm: BetCardModel
+            The BetCardModel object associated with the event card.
+
+        Returns:
+        None
+        """
         if chb.isChecked():
-            self.remove_widget(card)  # remove from the event list ('UI'), to avoid adding same event twice
-            self.ticket.add_widget(card)  # add to the ticket
+            self.remove_widget(card)
+            self.ticket.add_widget(card)
             self.bcm_selected_event_list.append(bcm)
         else:
-            self.ticket.remove_widget(card)  # remove from the ticket list
+            self.ticket.remove_widget(card)
             self.bcm_selected_event_list.remove(bcm)
-            self.add_widget(card)  # add back to the event list
+            self.add_widget(card)
 
     def clear_ticket(self):
-        # clear the list
+        """
+        Clears the selected events in the ticket.
+
+        Returns:
+        None
+        """
         self.bcm_selected_event_list.clear()
-        # Remove and delete all items from the layout
         layout = self.ticket.layout
         while layout.count():
             widget = layout.takeAt(0).widget()
             if widget is not None:
-                # search for the checkbox and unselect it
                 unselect_checkbox(widget)
                 self.add_widget(widget)
 
 
 class Ticket(BaseWidget):
     def __init__(self, event_list, home):
+        """
+        Initializes the Ticket widget.
+
+        Parameters:
+        - event_list: list
+            List of selected events.
+        - home: QWidget
+            The main window or parent widget.
+
+        Returns:
+        None
+        """
         super().__init__()
-        # that home instance from the home page will help us to update the sold label
-        self.home = home
-        # gather an instance from the event, for the selected event list
+        self.home = home  # Instance from the home page to update the sold label
         self.event_list = event_list
-        self.clear_btn = QPushButton('clear')
+        self.clear_btn = QPushButton('Clear')
 
     def add_buttons(self):
-        validate_btn = QPushButton('validate')
-        # add components to the layout
+        """
+        Creates and returns a layout with buttons for the ticket.
+
+        Returns:
+        QHBoxLayout
+        """
+        validate_btn = QPushButton('Validate')
         hbox = QHBoxLayout()
         hbox.addWidget(self.clear_btn)
         hbox.addWidget(validate_btn)
+
+        # Disable the "Validate" button if the user is not logged in
         if not UserProfile.account_id:
             validate_btn.setEnabled(False)
-        # add actions
+
+        # Connect actions to buttons
         validate_btn.clicked.connect(self.validate)
         return hbox
 
     def validate(self):
+        """
+        Validates and saves the selected events in the ticket.
+
+        Returns:
+        None
+        """
         if self.event_list:
-            if UserProfile.user_status[0] == 'A':  # check if the account is active
+            if UserProfile.user_status[0] == 'A':  # Check if the account is active
                 res = BetModel().save_events(self.event_list)
                 if type(res) == bool:
                     self.home.set_sold(UserProfile.user_fund)
-                    QMessageBox.information(None, "Success", 'Paris effectue avec success', QMessageBox.Ok)
-                    # revalidate the history tab
+                    QMessageBox.information(None, "Success", 'Paris effectué avec succès', QMessageBox.Ok)
+                    # Revalidate the history tab
                     self.home.revalidate_history_tab()
                 else:
                     QMessageBox.warning(None, "Echec", res, QMessageBox.Ok)
             else:
-                QMessageBox.warning(None, "Compte inactif", 'Veuillez reactiver votre compte!', QMessageBox.Ok)
+                QMessageBox.warning(None, "Compte inactif", 'Veuillez réactiver votre compte!', QMessageBox.Ok)
         else:
-            QMessageBox.warning(None, "Panier vide", 'Veuillez placer au moins un paris!', QMessageBox.Ok)
+            QMessageBox.warning(None, "Panier vide", 'Veuillez placer au moins un pari!', QMessageBox.Ok)

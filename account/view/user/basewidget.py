@@ -3,10 +3,16 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout
 
 class BaseWidget(QWidget):
     def __init__(self):
+        """
+        Initializes the BaseWidget.
+
+        Returns:
+        None
+        """
         super().__init__()
         self.layout = QVBoxLayout()
 
-        # scroll area
+        # Scroll area
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
 
@@ -16,6 +22,16 @@ class BaseWidget(QWidget):
         self.scroll_area.setWidget(scroll_widget)
 
     def add_widget(self, widget):
+        """
+        Adds a widget to the layout with alternating background colors.
+
+        Parameters:
+        - widget: QWidget
+            The widget to be added.
+
+        Returns:
+        None
+        """
         if self.layout.count() % 2 == 0:
             widget.setStyleSheet('background-color:rgb(255,255,255)')
         else:
@@ -23,11 +39,28 @@ class BaseWidget(QWidget):
         self.layout.addWidget(widget)
 
     def remove_widget(self, widget):
+        """
+        Removes a widget from the layout and revalidates it.
+
+        Parameters:
+        - widget: QWidget
+            The widget to be removed.
+
+        Returns:
+        None
+        """
         self.layout.removeWidget(widget)
         widget.setParent(None)
         self.revalidate_layout()
 
     def revalidate_layout(self):
+        """
+        Revalidates the layout by storing references to widgets, clearing the layout,
+        and adding the widgets back.
+
+        Returns:
+        None
+        """
         # Store references to the widgets
         widgets = [self.layout.itemAt(i).widget() for i in range(self.layout.count()) if
                    self.layout.itemAt(i) is not None]
@@ -40,6 +73,11 @@ class BaseWidget(QWidget):
             self.add_widget(widget)
 
     def clear_layout(self):
-        # Remove and delete all items from the layout
+        """
+        Clears the layout by removing and deleting all items.
+
+        Returns:
+        None
+        """
         while self.layout.count():
             self.layout.takeAt(0)

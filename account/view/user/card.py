@@ -7,10 +7,21 @@ from account.model.usereventmodel import UserEventModel
 
 class Card(QWidget):
     def __init__(self, status):
+        """
+        Initializes the Card widget.
+
+        Parameters:
+        - status: str
+            The status of events to load.
+
+        Returns:
+        None
+        """
         super().__init__()
         vbox = QVBoxLayout()
-        for counter, d in enumerate(
-                UserEventModel.load_data_for(status)):  # gather data for full events (matches and bet)
+
+        # Gather data for full events (matches and bet)
+        for counter, d in enumerate(UserEventModel.load_data_for(status)):
             vbox.addWidget(self.card(counter, d))
 
         scroll_area = QScrollArea()
@@ -27,10 +38,24 @@ class Card(QWidget):
         self.setLayout(main_layout)
 
     def card(self, count, dic):
+        """
+        Creates and returns a widget representing a history card with relevant information.
+
+        Parameters:
+        - count: int
+            The index or counter for alternating background colors.
+        - dic: dict
+            The dictionary containing history card data.
+
+        Returns:
+        QWidget
+        """
         hcm = HistoryCardModel(dic)
         wdg = QWidget()
         vbox = QVBoxLayout()
         wdg.setFixedHeight(180)
+
+        # Set background color based on index
         if count % 2 == 0:
             wdg.setStyleSheet('background-color:rgb(253,253,253)')
         else:
@@ -56,20 +81,17 @@ class Card(QWidget):
                 hcm.get_reward())))
         middle_hbox.setAlignment(Qt.AlignLeft)
         vbox.addLayout(middle_hbox)
+
         score_label = QLabel('<h3>Scores</h3>')
         vbox.addWidget(score_label)
         bottom_hbox = QHBoxLayout()
 
         bottom_hbox.addWidget(
-            QLabel('Current ' + str(hcm.get_current_score()) + ' - Predicted ' + str(hcm.get_predicted_score())))
+            QLabel('Event ' + str(hcm.get_current_score()) + ' - Predicted ' + str(hcm.get_predicted_score())))
         bottom_hbox.setAlignment(Qt.AlignLeft)
         vbox.addLayout(bottom_hbox)
 
-        vbox.addLayout(bottom_hbox)
-
-        """
-        other informations can be added to the card :(
-        """
+        # Additional information can be added to the card
 
         wdg.setLayout(vbox)
 
