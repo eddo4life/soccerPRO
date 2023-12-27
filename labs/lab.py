@@ -7,12 +7,17 @@ from PyQt5.QtWidgets import QSizePolicy, QHBoxLayout, QWidget
 
 
 class Lab:
-    # Back-end section
+    """
+     Back-end section
+    """
+
+    # auto generated id method for the user account_id
     @staticmethod
     def generate_id():
         unique_id = str(uuid.uuid4().hex)[:8]
         return unique_id
 
+    # this method take a dictionary of list and returns the value of all the lists combined
     @staticmethod
     def get_flattened_values(input_dict):
         value_list = list(input_dict.values())
@@ -33,12 +38,18 @@ class Lab:
         """
         return datetime.now().strftime('%H:%M')
 
-    #     Front-end section
+    """
+    Front-end section
+    """
+
+    # make a widget fit it's initial size
     @staticmethod
     def set_size_policy_fixed(widget):
         size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         widget.setSizePolicy(size_policy)
 
+    # this takes a layout and return it centered
+    @staticmethod
     def get_centered_layout(layout, w=500, h=250):
         layout.setSpacing(20)
         container_widget = QWidget()
@@ -50,6 +61,7 @@ class Lab:
         center_layout.addWidget(container_widget, alignment=Qt.AlignmentFlag.AlignCenter)
         return center_layout
 
+    # load icons
     @staticmethod
     def get_icon(name):
         return QIcon("icon/" + name)
