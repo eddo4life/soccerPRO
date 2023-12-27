@@ -237,7 +237,7 @@ class Ticket(BaseWidget):
                 res = BetModel().save_events(self.event_list)
                 if type(res) == bool:
                     self.home.set_sold(UserProfile.user_fund)
-                    QMessageBox.information(None, "Success", 'Paris effectué avec succès', QMessageBox.Ok)
+                    QMessageBox.information(None, "Success", 'Pari effectué avec succès', QMessageBox.Ok)
                     # Revalidate the history tab
                     self.home.revalidate_history_tab()
                 else:

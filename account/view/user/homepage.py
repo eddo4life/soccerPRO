@@ -23,6 +23,7 @@ class UserHomePage(QWidget):
         self.set_sold(self.user_profile.get_sold())
         self.init_ui()
 
+
     def init_ui(self):
         # Create the event and history tabs
         self.tab_widget = QTabWidget()

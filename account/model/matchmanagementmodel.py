@@ -4,7 +4,7 @@ from database.connection import DatabaseConnector
 class MatchManagementModel:
     def __init__(self, id_match, type_de_match, pays, date_match, heure_match, equipe_visiteuse, equipe_receveuse, cote,
                  score_final='0:0', etat='N'):
-        self.id_match = id_match
+        self.__id_match = id_match
         self.__type_de_match = type_de_match
         self.__pays = pays
         self.__date_match = date_match
@@ -44,7 +44,6 @@ class MatchManagementModel:
                      self.__equipe_visiteuse, self.__cote, self.__score_final, self.__etat)
             cursor.execute(query, value)
             conn.get_con().commit()
-            print("Data successfully inserted.")
         except Exception as err:
             print(f"Error: {err}")
 
@@ -62,12 +61,68 @@ class MatchManagementModel:
                           WHERE id=%s and etat!='t' 
                       """
             value = (self.__type_de_match, self.__pays, self.__date_match, self.__heure_match, self.__equipe_receveuse,
-                     self.__equipe_visiteuse, self.__cote, self.__score_final, self.__etat, self.id_match)
+                     self.__equipe_visiteuse, self.__cote, self.__score_final, self.__etat, self.__id_match)
             cursor.execute(query, value)
             conn.get_con().commit()
             print("Data successfully updated.")
         except Exception as err:
             print(f"Error: {err}")
+        finally:
+            conn.disconnect()
+
+    def cancel_match_and_refund(self):
+        conn = DatabaseConnector()
+        conn.connect()
+        cursor = conn.get_con().cursor(prepared=True)
+
+        try:
+            # Get details of the canceled match
+            query_select = "SELECT id_compte, montant FROM pariage WHERE id_match = %s"
+            cursor.execute(query_select, (self.__id_match,))
+            refund_details = cursor.fetchall()
+
+            # Refund each user
+            for user_id, refund_amount in refund_details:
+                query_update = "UPDATE parieur SET solde = solde + %s WHERE code = %s"
+                cursor.execute(query_update, (refund_amount, user_id))
+
+            # Delete the canceled match from 'pariage' table
+            query_delete = "DELETE FROM pariage WHERE id_match = %s"
+            cursor.execute(query_delete, (self.__id_match,))
+
+            conn.get_con().commit()
+
+        except Exception as err:
+            print(f"Error: {err}")
+        finally:
+            conn.disconnect()
+
+    def refund_users_if_scores_match(self):
+        conn = DatabaseConnector()
+        conn.connect()
+        cursor = conn.get_con().cursor(prepared=True)
+
+        try:
+            # Get the cote,final score of the match
+            query_match = "SELECT cote,score_final FROM matches WHERE id = %s"
+            cursor.execute(query_match, (self.__id_match,))
+            cote, match_score = cursor.fetchone()
+
+            # Check if scores match in pariage table
+            query_pariage = "SELECT id_compte, montant, score_prevu FROM pariage WHERE id_match = %s"
+            cursor.execute(query_pariage, (self.__id_match,))
+            pariage_details = cursor.fetchall()
+
+            for user_id, refund_amount, predicted_score in pariage_details:
+                if predicted_score == match_score:
+                    # Refund the user
+                    query_update = "UPDATE parieur SET solde = solde + %s WHERE code = %s"
+                    cursor.execute(query_update, ((float(refund_amount) * float(cote)), user_id))
+
+            conn.get_con().commit()
+        except Exception as err:
+            print(f"Error: {err}")
+
         finally:
             conn.disconnect()
 

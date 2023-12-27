@@ -99,7 +99,8 @@ class UserEventModel:
                     row_dict['score_home_team'] = str(row_dict['score_final'].split(':')[1])
                     data.append(row_dict)
         except Exception as e:
-            print(f'Error {e}')
+            if not query_not_null:
+                print(f'Error {e}')
         finally:
             conn.disconnect()
         return data

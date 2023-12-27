@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QTime, QDateTime, Qt
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtWidgets import QWidget, QComboBox, QHBoxLayout, QDateEdit, QTimeEdit, QLineEdit, QPushButton, \
-    QLabel, QVBoxLayout, QTableWidget, QAbstractItemView, QTableWidgetItem
+    QLabel, QVBoxLayout, QTableWidget, QAbstractItemView, QTableWidgetItem, QMessageBox
 
 from account.model.matchmanagementmodel import MatchManagementModel
 from account.model.teamsdataloader import TeamsDataLoader
@@ -25,6 +25,8 @@ class Matches(QWidget):
         self.clubs = self.tdl.get_clubs()
         self.national_teams = self.tdl.get_national_teams()
         self.national_teams_list = list(self.national_teams.keys())
+        # Initialize the status state
+        self.status = self.status_list[0]
 
         # Initialize the form
         self.init_form()
@@ -91,6 +93,7 @@ class Matches(QWidget):
         self.clear_btn.clicked.connect(self.init_fields)
         # Set up combobox currentIndexChanged events
         self.championship_box.currentIndexChanged.connect(self.selected_championship)
+        self.status_box.currentIndexChanged.connect(self.analyze_status)
 
         # Main layout
         self.hbox = QHBoxLayout()
@@ -117,7 +120,7 @@ class Matches(QWidget):
         # Set default text values for odds and score
         self.cote.setText('1.2')
         self.score.setText('0:0')
-        self.id_match = None  # An event without an ID is bound to save, not update.
+        self.__id_match = None  # An event without an ID is bound to save, not update.
         self.save_btn.setText('Save event')
         # Enable or disable components based on the provided parameter
         self.enable_components()
@@ -135,6 +138,51 @@ class Matches(QWidget):
         self.score.setEnabled(not is_enabled)
         self.date.setEnabled(is_enabled)
         self.time.setEnabled(is_enabled)
+
+    def analyze_status(self):
+        """
+        Analyze the status change and handle restrictions.
+
+        This method is responsible for analyzing the change in status from a previous status to a new one.
+        If the new status is 'S' (Supprimer) and the previous status was either 'E' (Encours) or 'N'
+        (Non Encore Joue), it displays an information message to inform the user that deletion
+        is not allowed for events that are either in progress or not yet played. It also reverts the status back
+        to the previous one in the GUI element (status_box).
+
+        If the new status is 'N' (Non Encore Joue) and the previous status was 'E' (Encours), it displays an
+        information message to inform the user that the action is not allowed for events that have already started.
+
+        Returns:
+            None
+        """
+        # Get the previous and current status
+        previous_status = self.status
+        current_status = self.status_box.currentText()
+
+        # Check if the current status is 'S' (Supprimer)
+        if current_status == 'S':
+            # Check if the previous status was 'E' (Encours) or 'N' (Non Encore Joue)
+            if previous_status == 'E' or previous_status == 'N':
+                # Show an information message to inform the user that deletion is not allowed
+                QMessageBox.information(None, "Suppression refusée",
+                                        "Vous pouvez supprimer un événement soit terminé soit annulé.", QMessageBox.Ok)
+
+                # Select back the previous status in the GUI element (status_box)
+                index = self.status_box.findText(previous_status)
+                if index != -1:
+                    self.status_box.setCurrentIndex(index)
+        elif current_status == 'N':
+            # Check if the previous status was 'E' (Encours)
+            if previous_status == 'E':
+                # Show an information message to inform the user that the action is not allowed
+                QMessageBox.information(None, "Action refusée",
+                                        "Vous pouvez mettre en mode (non encore joué) un événement qui a déjà commencé.",
+                                        QMessageBox.Ok)
+
+                # Select back the previous status in the GUI element (status_box)
+                index = self.status_box.findText(previous_status)
+                if index != -1:
+                    self.status_box.setCurrentIndex(index)
 
     def revalidate_combobox(self, combobox, datas):
         """
@@ -216,9 +264,14 @@ class Matches(QWidget):
         etat = self.status_box.currentText()
         date_match = Lab.get_current_date()
         heure_match = Lab.get_current_time()
-        mmm = MatchManagementModel(self.id_match, championship, country, date_match, heure_match, away_team, home_team,
+        mmm = MatchManagementModel(self.__id_match, championship, country, date_match, heure_match, away_team,
+                                   home_team,
                                    self.cote.text(), self.score.text(), etat)
-        if self.id_match:
+        if self.__id_match:
+            if etat == 'A':
+                mmm.cancel_match_and_refund()
+            elif etat == 'T':
+                mmm.refund_users_if_scores_match()
             mmm.update()
         else:
             mmm.save()
@@ -278,7 +331,7 @@ class Matches(QWidget):
             self.enable_components(False)
             # retrieve the id
             id_item = self.table.item(selected_row, 0)
-            self.id_match = id_item.text()
+            self.__id_match = id_item.text()
             type_match_item = self.table.item(selected_row, 1)
             country_item = self.table.item(selected_row, 2)
             date_item = self.table.item(selected_row, 3)
@@ -326,6 +379,9 @@ class Matches(QWidget):
             # score
             self.score.setText(score_item.text())
             # status
-            index = self.status_box.findText(status_item.text().upper())
+            self.status = status_item.text().upper()
+            index = self.status_box.findText(self.status)
             if index != -1:
+                self.status_box.blockSignals(True)
                 self.status_box.setCurrentIndex(index)
+                self.status_box.blockSignals(False)

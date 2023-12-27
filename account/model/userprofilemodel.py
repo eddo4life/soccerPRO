@@ -90,7 +90,6 @@ class UserProfileModel:
         conn.connect()
         # Create a cursor
         cursor = conn.get_con().cursor()
-
         # Execute the query
         query = "SELECT * FROM parieur WHERE telephone = %s or username = %s and mot_de_passe=%s and etat!='s' LIMIT 1;"
         cursor.execute(query, (user_id, user_id, user_password))
