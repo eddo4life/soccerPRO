@@ -153,9 +153,12 @@ class SignUpForm(QWidget):
         Process the user's sign-up request and save the entered information.
 
         If the entered information is valid, the user is signed up, and the main window is updated accordingly.
-        Otherwise, an error message is displayed.
+        Otherwise, an error message is displayed to inform the user about the issue.
+
+        Returns:
+            None
         """
-        # Retrieving and cleaning information:
+        # Retrieve and clean user input:
         name = self.name_input.text().upper().strip()
         first_name = self.first_name_input.text().title().strip()
         sex = self.sex_combobox.currentText().strip()
@@ -164,26 +167,32 @@ class SignUpForm(QWidget):
         nif_cin = self.nif_cin_input.text().strip()
         username = self.username_input.text().strip()
         password = self.password_input.text().strip()
+
+        # Create a UserProfileModel instance with the user's information
         upm = UserProfileModel(account_id=Lab.generate_id(), username=username, name=name, sex=sex,
-                               first_name=first_name,
-                               address=address, telephone=telephone, nif_cin=nif_cin, password=password, status='A')
+                               first_name=first_name, address=address, telephone=telephone,
+                               nif_cin=nif_cin, password=password, status='A')
 
         if upm.valid_data():
-            #  proceed and check if any message was not returned
+            # Save the user information and check for any error messages
             error_message = upm.save()
             if not error_message:
-                # automatically login with telephone and password
+                # Automatically log in with the provided telephone and password
                 self.__main_window.login(telephone, password)
             else:
-                # an error occurs
-                if "Duplicate entry" in error_message and "parieur.telephone" in error_message:
-                    error_message = "Le numéro de téléphone est déjà en cours d'utilisation."
-                elif "Duplicate entry" in error_message and "parieur.nif_cin" in error_message:
-                    error_message = "Le NIF/CIN est déjà en cours d'utilisation."
-                elif "Duplicate entry" in error_message and "parieur.username" in error_message:
-                    error_message = "Le nom d'utilisateur est déjà pris."
-                else:
-                    error_message = "An unexpected error occurred: " + error_message
+                # Handle specific error cases
+                if "Duplicate entry" in error_message:
+                    if "parieur.telephone" in error_message:
+                        error_message = "Le numéro de téléphone est déjà en cours d'utilisation."
+                    elif "parieur.nif_cin" in error_message:
+                        error_message = "Le NIF/CIN est déjà en cours d'utilisation."
+                    elif "parieur.username" in error_message:
+                        error_message = "Le nom d'utilisateur est déjà pris."
+                    else:
+                        error_message = "Une erreur inattendue s'est produite : " + error_message
+
+                # Display a warning message with the appropriate error details
                 QMessageBox.warning(None, "Denied", error_message, QMessageBox.Ok)
         else:
+            # Display a warning message for missing information
             QMessageBox.warning(None, "Denied", 'Toutes les informations sont requises!', QMessageBox.Ok)
