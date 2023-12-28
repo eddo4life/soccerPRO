@@ -1,8 +1,30 @@
-import os
+import json
 import sys
 
 import mysql.connector
 from PyQt5.QtWidgets import QMessageBox
+
+
+def load_credentials():
+    """
+    Load database credentials data from a JSON file.
+
+    Returns:
+        dict: A dictionary containing the credentials.
+    """
+    datas = {}
+    file_path = 'database_credentials.json'
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            datas = json.load(file)
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+    except json.JSONDecodeError:
+        print(f"Error: Unable to decode JSON from '{file_path}'.")
+    except Exception as e:
+        print(f"Error: An unexpected error occurred while loading data from '{file_path}': {e}")
+
+    return datas
 
 
 class DatabaseConnector:
@@ -10,10 +32,11 @@ class DatabaseConnector:
         """
         Initializes a DatabaseConnector instance with default connection parameters.
         """
-        self.host = 'localhost'
-        self.user = 'root'
-        self.password = 'password'
-        self.database = 'xparyaj'
+        data = load_credentials()
+        self.host = str(data['host']).strip()
+        self.user = str(data['user']).strip()
+        self.password = str(data['password']).strip()
+        self.database = str(data['database']).strip()
         self.__connection = None
 
     def connect(self):
@@ -29,7 +52,7 @@ class DatabaseConnector:
             )
 
         except mysql.connector.Error as err:
-            QMessageBox.warning(None, "Connection Error", err.__str__() + str(Locate.file_location()), QMessageBox.Ok)
+            QMessageBox.warning(None, "Connection Error", err.__str__(), QMessageBox.Ok)
             sys.exit()
 
     def get_con(self):
@@ -48,30 +71,3 @@ class DatabaseConnector:
         if self.__connection:
             if self.__connection.is_connected():
                 self.__connection.close()
-
-
-class Locate:
-    """
-    A class for handling file location information when the connection to the database fails.
-
-    Attributes:
-    - No class attributes defined.
-
-    Methods:
-    - file_location: Returns a formatted string containing the script directory,
-      and script filename.
-
-    """
-
-    @staticmethod
-    def file_location():
-        # Get the script file name
-        script_location = os.path.abspath(__file__)
-        script_directory, script_filename = os.path.split(script_location)
-        result = f"""
-        
-Script directory: {script_directory}
-
-Script filename: {script_filename}
-                 """
-        return result

@@ -22,8 +22,8 @@ class AdminDialog(QDialog):
         self.error_label.setStyleSheet("color: red")
 
         # Input fields
-        self.id_edit = QLineEdit()
-        self.password_edit = QLineEdit()
+        self.id_edit = QLineEdit('admin')
+        self.password_edit = QLineEdit('1234')
         self.password_edit.setEchoMode(QLineEdit.Password)
 
         # Connect button
@@ -48,13 +48,11 @@ class AdminDialog(QDialog):
         entered_id = self.id_edit.text()
         entered_password = self.password_edit.text()
 
-        # Check if ID is 'admin' and password is '1234'
+        # Check if ID is 'admin' and password is '1234' (default, can be changed later)
         if entered_id == 'admin' and entered_password == '1234':
             self.accept()  # Accept the dialog (credentials are correct)
         else:
             self.error_label.setText("Incorrect credentials")
-
-        self.accept()  # to be removed later
 
 
 class LoginWindow(QWidget):
@@ -75,8 +73,8 @@ class LoginWindow(QWidget):
         Initialize the UI elements for the Login window.
         """
         # Create widgets
-        self.id_entry = QLineEdit('Eddo4life')
-        self.password_entry = QLineEdit('password')
+        self.id_entry = QLineEdit()
+        self.password_entry = QLineEdit()
         self.password_entry.setEchoMode(QLineEdit.Password)  # To hide the password input
         self.forgot_password_label = QLabel('<a href="#">Forgot Password?</a>')
         self.forgot_password_label.linkActivated.connect(self.show_forgot_password_step)

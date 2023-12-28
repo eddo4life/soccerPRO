@@ -64,7 +64,6 @@ class MatchManagementModel:
                      self.__equipe_visiteuse, self.__cote, self.__score_final, self.__etat, self.__id_match)
             cursor.execute(query, value)
             conn.get_con().commit()
-            print("Data successfully updated.")
         except Exception as err:
             print(f"Error: {err}")
         finally:

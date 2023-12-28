@@ -47,11 +47,11 @@ class BetModel:
                     # operations were 'successful'
                     return True
                 else:
-                    return 'Insufficient fund: ' + str(total_fund) + " for " + str(UserProfile.user_fund)
+                    return "Fonds insuffisants : " + str(total_fund) + " pour " + str(UserProfile.user_fund)
             else:
-                return 'Amount out of bound, correct range [10-75000]'
+                return "Montant hors limite, plage correcte [10-75000]"
         else:
-            return 'An amount field was found empty'
+            return "Un champ de montant a été trouvé vide."
 
     @staticmethod
     def get_total_amount(bcm_list):

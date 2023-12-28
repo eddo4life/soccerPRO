@@ -24,7 +24,9 @@ class Matches(QWidget):
         self.top_championship = self.tdl.get_top_championship()
         self.clubs = self.tdl.get_clubs()
         self.national_teams = self.tdl.get_national_teams()
+        # retrieve values from dict to list
         self.national_teams_list = list(self.national_teams.keys())
+        self.clubs_list = Lab.get_flattened_values(self.clubs)
         # Initialize the status state
         self.status = self.status_list[0]
 
@@ -94,6 +96,8 @@ class Matches(QWidget):
         # Set up combobox currentIndexChanged events
         self.championship_box.currentIndexChanged.connect(self.selected_championship)
         self.status_box.currentIndexChanged.connect(self.analyze_status)
+        self.away_team_box.currentIndexChanged.connect(self.set_club_or_national_team_to_away_box)
+        self.home_team_box.currentIndexChanged.connect(self.set_club_or_national_team_to_away_box)
 
         # Main layout
         self.hbox = QHBoxLayout()
@@ -128,16 +132,65 @@ class Matches(QWidget):
     def enable_components(self, is_enabled=True):
         """
         Enable or disable UI components based on the provided parameter.
+        all access are granted if saving, but not for updating
         """
         self.championship_box.setEnabled(is_enabled)
         self.home_team_box.setEnabled(is_enabled)
-        self.country_box.setEnabled(is_enabled)
         self.home_team_box.setEnabled(is_enabled)
         self.away_team_box.setEnabled(is_enabled)
         # The score should initially be 0:0 and not editable
         self.score.setEnabled(not is_enabled)
-        self.date.setEnabled(is_enabled)
-        self.time.setEnabled(is_enabled)
+
+        # The date/time and country where the match is going to be played can be modified
+
+        # self.date.setEnabled(is_enabled)
+        # self.time.setEnabled(is_enabled)
+        # self.country_box.setEnabled(is_enabled)
+
+    def set_club_or_national_team_to_away_box(self):
+        """
+        Set the options for the away team based on the selected home team and championship.
+
+        This method is responsible for dynamically updating the options in the away team combo box based on the
+        selected home team and championship. It ensures that the away team options are updated appropriately based on
+        whether the selected teams are clubs or national teams.
+
+        Returns:
+            None
+        """
+        # Block signals before proceeding with any update to avoid recursive calls
+        self.championship_box.blockSignals(True)
+        self.home_team_box.blockSignals(True)
+        self.away_team_box.blockSignals(True)
+
+        # Get the selected home and away team
+        selected_home_team = self.home_team_box.currentText()
+        selected_away_team = self.away_team_box.currentText()
+
+        # Check if both home and away selected teams are not the same
+        if selected_away_team != selected_home_team:
+            # Get the currently selected championship
+            championship = self.championship_box.currentText().lower()
+            if championship == 'eliminatoire' or championship == 'amical':
+                if selected_home_team in self.clubs_list:
+                    # The team is a club
+                    self.revalidate_combobox(self.away_team_box, self.clubs_list)
+                else:
+                    # It's probably a national team
+                    self.revalidate_combobox(self.away_team_box, list(self.national_teams.keys()))
+        else:
+            # Show an information message to inform the user that the action is not allowed
+            QMessageBox.information(None, "Action refusée",
+                                    "Vous devez choisir deux équipes différentes.",
+                                    QMessageBox.Ok)
+            # Select two different teams to avoid conflicts
+            self.home_team_box.setCurrentIndex(0)
+            self.away_team_box.setCurrentIndex(1)
+
+        # Enable back the signals
+        self.championship_box.blockSignals(False)
+        self.home_team_box.blockSignals(False)
+        self.away_team_box.blockSignals(False)
 
     def analyze_status(self):
         """
@@ -176,7 +229,7 @@ class Matches(QWidget):
             if previous_status == 'E':
                 # Show an information message to inform the user that the action is not allowed
                 QMessageBox.information(None, "Action refusée",
-                                        "Vous pouvez mettre en mode (non encore joué) un événement qui a déjà commencé.",
+                                        "Vous pouvez mettre en mode (non encore joué) un événement qui a été déjà commencé.",
                                         QMessageBox.Ok)
 
                 # Select back the previous status in the GUI element (status_box)
@@ -224,6 +277,9 @@ class Matches(QWidget):
         Slot method called when the championship selection changes.
         """
         self.country_box.blockSignals(True)  # Disable signals temporarily
+        self.home_team_box.blockSignals(True)
+        self.away_team_box.blockSignals(True)
+
         value = self.championship_box.currentText()
         if value == 'Championnat':
             # only for top 5 championship
@@ -240,17 +296,17 @@ class Matches(QWidget):
             self.revalidate_combobox(self.home_team_box, self.national_teams_list)
             self.revalidate_combobox(self.away_team_box, self.national_teams_list[::-1])
         elif value == 'Eliminatoire' or value == 'Amical':
-            # all national teams (top 50) and clubs
-            teams = Lab.get_flattened_values(self.clubs)
-            teams.extend(list(self.national_teams.keys()))
-            # home and  away team
-            self.revalidate_combobox(self.home_team_box, teams)
-            self.revalidate_combobox(self.away_team_box, teams[::-1])
+
+            # home and away team
+            self.revalidate_combobox(self.away_team_box, self.clubs_list[::-1])
+            # extend national national teams to clubs
+            self.revalidate_combobox(self.home_team_box, self.clubs_list + list(self.national_teams.keys()))
             # country the match can be played
             self.revalidate_combobox(self.country_box, list(self.national_teams.keys()))
-        else:
-            print("Unknown match type")
+
         self.country_box.blockSignals(False)  # Re-enable signals
+        self.home_team_box.blockSignals(False)
+        self.away_team_box.blockSignals(False)
 
     def save_event(self):
         """
