@@ -169,8 +169,21 @@ class SignUpForm(QWidget):
                                address=address, telephone=telephone, nif_cin=nif_cin, password=password, status='A')
 
         if upm.valid_data():
-            upm.save()
-            # automatically login with telephone and password
-            self.__main_window.login(telephone, password)
+            #  proceed and check if any message was not returned
+            error_message = upm.save()
+            if not error_message:
+                # automatically login with telephone and password
+                self.__main_window.login(telephone, password)
+            else:
+                # an error occurs
+                if "Duplicate entry" in error_message and "parieur.telephone" in error_message:
+                    error_message = "Le numéro de téléphone est déjà en cours d'utilisation."
+                elif "Duplicate entry" in error_message and "parieur.nif_cin" in error_message:
+                    error_message = "Le NIF/CIN est déjà en cours d'utilisation."
+                elif "Duplicate entry" in error_message and "parieur.username" in error_message:
+                    error_message = "Le nom d'utilisateur est déjà pris."
+                else:
+                    error_message = "An unexpected error occurred: " + error_message
+                QMessageBox.warning(None, "Denied", error_message, QMessageBox.Ok)
         else:
             QMessageBox.warning(None, "Denied", 'Toutes les informations sont requises!', QMessageBox.Ok)

@@ -155,10 +155,11 @@ class UserProfileModel:
             cursor.execute(query, value)
             conn.get_con().commit()
         except Exception as err:
-            print(f"Error: {err}")
-
+            conn.disconnect()
+            return str(err)
         finally:
             conn.disconnect()
+        return None
 
     # update profile
     def update(self):
