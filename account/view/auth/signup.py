@@ -17,6 +17,7 @@ class SignUpForm(QWidget):
         super().__init__()
 
         self.__main_window = main_window
+        self.current_step = 0  # initially
         self.init_ui()
 
     def init_ui(self):
@@ -99,6 +100,7 @@ class SignUpForm(QWidget):
         self.next_button.clicked.connect(self.next_step)
         self.prev_button.clicked.connect(self.prev_step)
         self.cancel_button.clicked.connect(self.back_to_login)
+        self.update_navigation_buttons_enabled_state()
 
         self.layout.addWidget(self.tree_widget)
         self.layout.addWidget(self.stacked_widget)
@@ -107,7 +109,7 @@ class SignUpForm(QWidget):
         hbox.addWidget(self.next_button)
         hbox.addWidget(self.cancel_button)
         self.layout.addLayout(hbox)
-        self.current_step = 0  # initially
+
         self.update_tree()
         #     set the layout
         self.setLayout(Lab.get_centered_layout(self.layout, 1000, 700))
@@ -117,17 +119,18 @@ class SignUpForm(QWidget):
         clearing the fields
         :return: None
         """
-        self.telephone_input.setText('')
-        self.address_input.setText('')
-        self.nif_cin_input.setText('')
-        self.name_input.setText('')
-        self.first_name_input.setText('')
-        self.username_input.setText('')
-        self.password_input.setText('')
+        self.telephone_input.clear()
+        self.address_input.clear()
+        self.nif_cin_input.clear()
+        self.name_input.clear()
+        self.first_name_input.clear()
+        self.username_input.clear()
+        self.password_input.clear()
         self.sex_combobox.setCurrentIndex(0)
         self.stacked_widget.setCurrentIndex(0)
         self.current_step = 0
         self.update_tree()
+        self.update_navigation_buttons_enabled_state()
 
     def update_tree(self):
         """
@@ -149,6 +152,7 @@ class SignUpForm(QWidget):
             self.current_step += 1
             self.stacked_widget.setCurrentIndex(self.current_step)
             self.update_tree()
+        self.update_navigation_buttons_enabled_state()
 
     def prev_step(self):
         """
@@ -158,6 +162,11 @@ class SignUpForm(QWidget):
             self.current_step -= 1
             self.stacked_widget.setCurrentIndex(self.current_step)
             self.update_tree()
+        self.update_navigation_buttons_enabled_state()
+
+    def update_navigation_buttons_enabled_state(self):
+        self.prev_button.setEnabled(self.current_step > 0)
+        self.next_button.setEnabled(self.current_step < self.stacked_widget.count() - 1)
 
     def back_to_login(self):
         """

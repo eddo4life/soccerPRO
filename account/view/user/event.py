@@ -10,7 +10,7 @@ from account.view.user.basewidget import BaseWidget
 from account.view.user.profile.userprofile import UserProfile
 
 
-def unselect_checkbox(widget, target_text='placer'):
+def unselect_card_checkbox(widget, target_text='placer'):
     """
     Unselects a checkbox with a specified target text within a given widget's layout.
 
@@ -29,6 +29,33 @@ def unselect_checkbox(widget, target_text='placer'):
             item = layout.itemAt(i)
             if isinstance(item.widget(), QCheckBox) and item.widget().text().lower() == target_text:
                 item.widget().setChecked(False)
+        except Exception as e:
+            print(f"An exception occurred: {str(e)}")
+
+
+def clear_cards_fields(widget):
+    """
+    Clears the QLineEdit fields within a QWidget's layout.
+
+    Parameters:
+    - widget: QWidget
+        The widget containing the layout with QLineEdit.
+
+    Returns:
+    None
+    """
+    layout = widget.layout()
+
+    for i in range(layout.count()):
+        try:
+            item = layout.itemAt(i)
+
+            if isinstance(item.layout(), QHBoxLayout):
+                for j in range(item.layout().count()):
+                    sub_item = item.layout().itemAt(j)
+                    if isinstance(sub_item.widget(), QLineEdit):
+                        sub_item.widget().clear()
+
         except Exception as e:
             print(f"An exception occurred: {str(e)}")
 
@@ -182,7 +209,8 @@ class Event(BaseWidget):
         while layout.count():
             widget = layout.takeAt(0).widget()
             if widget is not None:
-                unselect_checkbox(widget)
+                unselect_card_checkbox(widget)
+                clear_cards_fields(widget)
                 self.add_widget(widget)
 
 
