@@ -58,9 +58,6 @@ class DatabaseConnector:
     def get_con(self):
         """
         Returns the MySQL connection object.
-
-        Returns:
-            mysql.connector.connection_cext.CMySQLConnection: The MySQL connection object.
         """
         return self.__connection
 

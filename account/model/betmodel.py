@@ -36,9 +36,8 @@ class BetModel:
                     # iterating for each event and save them
                     for bcm in bcm_list:
                         self.__match_id = bcm.get_id_match()
-                        # home-away (QLineEdit instance)
                         self.__score = BetModel.get_score(bcm)
-                        self.__amount = bcm.get_amount().text()
+                        self.__amount = str(bcm.get_amount().text()).replace(',', '.')
                         self.__date = Lab.get_current_date()
                         self.save()
                     # finally update the fund
@@ -67,7 +66,7 @@ class BetModel:
         """
         total_fund = 0.0
         for bcm in bcm_list:
-            amount = bcm.get_amount().text()
+            amount = str(bcm.get_amount().text()).replace(',', '.')
             if len(amount) != 0:
                 # converting the amount to float
                 amount = float(amount)

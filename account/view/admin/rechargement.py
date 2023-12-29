@@ -102,7 +102,7 @@ class Reload(QWidget):
                 if sold >= 10:
                     UserProfileModel.update_sold(self.account_id.text(), sold)
                     self.load_data()
-                    # Clear the solde line edit
+                    # Clear the sold line edit
                     self.new_sold.setText('')
                 else:
                     QMessageBox.warning(None, "Echec", 'Le montant doit être >=10', QMessageBox.Ok)

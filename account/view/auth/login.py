@@ -101,7 +101,6 @@ class LoginWindow(QWidget):
         """
         Show the Forgot Password step.
         """
-        # Switch to the Forgot Password step
         self.__main_window.set_title('Forgot password')
         self.__main_window.change_step(1)
 
@@ -109,7 +108,6 @@ class LoginWindow(QWidget):
         """
         Switch to the Sign-up step.
         """
-        # Switch to the Sign-up step
         self.__main_window.set_title('Signup')
         self.__main_window.change_step(2)
 

@@ -112,6 +112,23 @@ class SignUpForm(QWidget):
         #     set the layout
         self.setLayout(Lab.get_centered_layout(self.layout, 1000, 700))
 
+    def clear_fields(self):
+        """
+        clearing the fields
+        :return: None
+        """
+        self.telephone_input.setText('')
+        self.address_input.setText('')
+        self.nif_cin_input.setText('')
+        self.name_input.setText('')
+        self.first_name_input.setText('')
+        self.username_input.setText('')
+        self.password_input.setText('')
+        self.sex_combobox.setCurrentIndex(0)
+        self.stacked_widget.setCurrentIndex(0)
+        self.current_step = 0
+        self.update_tree()
+
     def update_tree(self):
         """
         Update the visual indication of the sign-up progress in the tree widget.
@@ -177,6 +194,8 @@ class SignUpForm(QWidget):
             # Save the user information and check for any error messages
             error_message = upm.save()
             if not error_message:
+                # clear the fields
+                self.clear_fields()
                 # Automatically log in with the provided telephone and password
                 self.__main_window.login(telephone, password)
             else:
