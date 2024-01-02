@@ -20,12 +20,17 @@ def load_credentials():
     except FileNotFoundError:
         print(f"Error: File '{file_path}' not found.")
         from config.config import Configuration
-        # try to create the file
+        # try to create the file if the file is deleted
         Configuration().save_configuration()
         # make a recursive call to retry the process
         return load_credentials()
     except json.JSONDecodeError:
         print(f"Error: Unable to decode JSON from '{file_path}'.")
+        from config.config import Configuration
+        # try to create the file if the file was corrupted
+        Configuration().save_configuration()
+        # make a recursive call to retry the process
+        return load_credentials()
     except Exception as e:
         print(f"Error: An unexpected error occurred while loading data from '{file_path}': {e}")
 
