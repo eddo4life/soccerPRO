@@ -1,4 +1,5 @@
 from database.connection import DatabaseConnector
+from labs.lab import Lab
 
 
 class MatchManagementModel:
@@ -25,7 +26,8 @@ class MatchManagementModel:
                 cursor.execute("SELECT * FROM Matches WHERE etat!='s'")
                 data = cursor.fetchall()
         except Exception as e:
-            print(f'Exception: {e}')
+            # Handle the case when the table is not found (improve exception handling later).
+            Lab.invoke_config(f'Exception: {e}')
         finally:
             conn.disconnect()
         return data

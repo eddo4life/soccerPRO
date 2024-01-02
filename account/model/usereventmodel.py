@@ -1,5 +1,6 @@
 from account.view.user.profile.userprofile import UserProfile
 from database.connection import DatabaseConnector
+from labs.lab import Lab
 
 
 class UserEventModel:
@@ -100,7 +101,9 @@ class UserEventModel:
                     data.append(row_dict)
         except Exception as e:
             if not query_not_null:
-                print(f'Error {e}')
+                # Handle the case when the table is not found (improve exception handling later).
+                Lab.invoke_config(f'Exception: {e}')
+
         finally:
             conn.disconnect()
         return data

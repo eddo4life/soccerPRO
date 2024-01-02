@@ -1,4 +1,3 @@
-
 CREATE TABLE `matches` (
   `id` int NOT NULL AUTO_INCREMENT,
   `type_de_match` enum('championnat','coupe du monde','eliminatoire','amical') NOT NULL,
@@ -11,4 +10,4 @@ CREATE TABLE `matches` (
   `score_final` varchar(5) NOT NULL DEFAULT '0:0',
   `etat` enum('n','e','t','a','s') NOT NULL DEFAULT 'n',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);

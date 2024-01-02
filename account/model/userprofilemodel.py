@@ -1,4 +1,5 @@
 from database.connection import DatabaseConnector
+from labs.lab import Lab
 
 
 class UserProfileModel:
@@ -129,7 +130,8 @@ class UserProfileModel:
                 cursor.execute(query)
                 datas.extend(cursor.fetchall())
         except Exception as e:
-            print(f'Exception: {e}')
+            # Handle the case when the table is not found (improve exception handling later).
+            Lab.invoke_config(f'Exception: {e}')
 
         finally:
             conn.disconnect()

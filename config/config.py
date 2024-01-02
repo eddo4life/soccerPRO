@@ -5,7 +5,6 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QFormLayout, QDialog, QLineEdit, QTextEdit, QPushButton, QHBoxLayout, QLabel, \
     QTabWidget, QVBoxLayout, QWidget, QMessageBox
 
-import main
 from database.connection import DatabaseConnector
 
 
@@ -14,6 +13,9 @@ class Configuration(QDialog):
         super().__init__()
         self.setModal(True)
         self.setWindowTitle('Config')
+        self.matches = 'scripts/xparyaj_matches.sql'
+        self.paryaj = 'scripts/xparyaj_pariage.sql'
+        self.parieur = 'scripts/xparyaj_parieur.sql'
         self.init_ui()
 
     def init_ui(self):
@@ -21,8 +23,8 @@ class Configuration(QDialog):
         tab_widget = QTabWidget(self)
 
         # Add tabs for Queries and Connection Fields
-        tab_widget.addTab(self.create_queries_tab(), 'Queries')
         tab_widget.addTab(self.create_connection_tab(), 'Connection Fields')
+        tab_widget.addTab(self.create_queries_tab(), 'Queries')
 
         # Set the main layout as a vertical layout containing the tab widget
         main_layout = QVBoxLayout(self)
@@ -47,16 +49,9 @@ class Configuration(QDialog):
         # Make the QTextEdit non-editable
         self.queries_text_edit.setReadOnly(True)
         # Append text to QTextEdit using read_sql_file
-        self.append_text('scripts/xparyaj_matches.sql')
-        self.append_text('')
-        self.append_text('scripts/xparyaj_pariage.sql')
-        self.append_text('')
-        self.append_text('scripts/xparyaj_parieur.sql')
-
-        # Create a button for creating tables
-        create_tables_button = QPushButton('Create Tables')
-        create_tables_button.clicked.connect(self.create_tables)
-        queries_layout.addWidget(create_tables_button)
+        self.append_text(self.matches)
+        self.append_text(self.paryaj)
+        self.append_text(self.parieur)
 
         return queries_tab
 
@@ -78,7 +73,7 @@ class Configuration(QDialog):
 
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.Password)
-        self.password_input.setPlaceholderText('mysql password')
+        self.password_input.setPlaceholderText('mysql password (if any)')
         connection_layout.addRow('Password', self.password_input)
 
         self.database_input = QLineEdit()
@@ -116,10 +111,6 @@ class Configuration(QDialog):
         connection_layout.addRow(hbox_layout)
 
         return connection_tab
-
-    def create_tables(self):
-        # TODO: Implement logic for creating tables based on queries
-        pass
 
     def test_connection(self):
 
@@ -159,7 +150,7 @@ class Configuration(QDialog):
     def read_sql_file(self, file_path):
         try:
             with open(file_path, 'r') as sql_file:
-                return sql_file.read()
+                return sql_file.read().strip()
 
         except IOError as e:
             return f"Error reading the file '{file_path}': {str(e)}"
@@ -183,15 +174,20 @@ class Configuration(QDialog):
         if conn.get_con():
             try:
                 with conn.get_con().cursor() as cursor:
-                    cursor.execute(self.queries_text_edit.toPlainText())
+                    cursor.execute(self.read_sql_file(self.matches))
+                    cursor.execute(self.read_sql_file(self.paryaj))
+                    cursor.execute(self.read_sql_file(self.parieur))
                     conn.get_con().commit()
-                    #         launch main
-                    main.start_application()  # Call the function to relaunch the application
+                    # lauch again the app
+                    QMessageBox.information(None, "Success'", "Veuillez relancer l'application!", QMessageBox.Ok)
+                    sys.exit()
             except Exception as err:
                 if 'already exists' in err.__str__().lower():
-                    main.start_application()
+                    QMessageBox.information(None, "Failed'", err.__str__() + "\nVeuillez relancer l'application!",
+                                            QMessageBox.Ok)
+                    sys.exit()
                 else:
-                    QMessageBox.warning(None, "Create tables failed", err.__str__(), QMessageBox.Ok)
+                    QMessageBox.warning(None, "Create tables 'failed'", err.__str__(), QMessageBox.Ok)
             finally:
                 conn.disconnect()
         else:

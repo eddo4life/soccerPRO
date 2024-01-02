@@ -1,9 +1,10 @@
+import sys
 import uuid
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QSizePolicy, QWidget, QHBoxLayout
+from PyQt5.QtWidgets import QSizePolicy, QWidget, QHBoxLayout, QDialog, QMessageBox
 
 
 class Lab:
@@ -40,6 +41,14 @@ class Lab:
         Returns the current date in the format 'YYYY-MM-DD'.
         """
         return datetime.now().strftime('%Y-%m-%d')
+
+    @staticmethod
+    def invoke_config(msg):
+        QMessageBox.warning(None, "Table not found", msg, QMessageBox.Ok)
+        from config.config import Configuration
+        dialog = Configuration()
+        if dialog.exec_() != QDialog.Accepted:
+            sys.exit()
 
     @staticmethod
     def get_current_time():

@@ -1,4 +1,3 @@
-
 CREATE TABLE `parieur` (
   `code` varchar(255) NOT NULL,
   `nom` varchar(255) NOT NULL,
@@ -15,5 +14,5 @@ CREATE TABLE `parieur` (
   UNIQUE KEY `telephone` (`telephone`),
   UNIQUE KEY `nif_cin` (`nif_cin`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
