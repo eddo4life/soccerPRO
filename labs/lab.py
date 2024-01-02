@@ -91,3 +91,11 @@ class Lab:
             QIcon: The loaded icon.
         """
         return QIcon("icon/" + name)
+
+    @staticmethod
+    def get_logout_btn_style():
+        return '''
+            QPushButton:hover {
+                color: red;
+            }
+            '''

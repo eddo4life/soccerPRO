@@ -42,6 +42,7 @@ class ForgotPassword(QWidget):
         self.reset_password_button.clicked.connect(self.reset_password)
         self.back_button = QPushButton('Back')
         self.back_button.clicked.connect(self.show_previous_login_step)
+        self.back_button.setStyleSheet(Lab.get_logout_btn_style())
 
         # Set up form layout for the Forgot Password step
         form_layout = QFormLayout()

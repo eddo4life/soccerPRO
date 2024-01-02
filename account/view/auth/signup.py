@@ -89,13 +89,7 @@ class SignUpForm(QWidget):
         self.prev_button = QPushButton("Previous", self)
         self.next_button = QPushButton("Next", self)
         self.cancel_button = QPushButton("Cancel", self)
-        self.cancel_button.setStyleSheet(
-            '''
-            QPushButton:hover {
-                color: red;
-            }
-            '''
-        )
+        self.cancel_button.setStyleSheet(Lab.get_logout_btn_style())
 
         self.next_button.clicked.connect(self.next_step)
         self.prev_button.clicked.connect(self.prev_step)
