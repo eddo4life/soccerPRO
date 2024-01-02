@@ -2,7 +2,7 @@ import json
 import sys
 
 import mysql.connector
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QDialog
 
 
 def load_credentials():
@@ -13,12 +13,17 @@ def load_credentials():
         dict: A dictionary containing the credentials.
     """
     datas = {}
-    file_path = 'database_credentials.json'
+    file_path = 'config.json'
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             datas = json.load(file)
     except FileNotFoundError:
         print(f"Error: File '{file_path}' not found.")
+        from config.config import Configuration
+        # try to create the file
+        Configuration().save_configuration()
+        # make a recursive call to retry the process
+        return load_credentials()
     except json.JSONDecodeError:
         print(f"Error: Unable to decode JSON from '{file_path}'.")
     except Exception as e:
@@ -28,18 +33,19 @@ def load_credentials():
 
 
 class DatabaseConnector:
-    def __init__(self):
+    def __init__(self, data=None):
         """
         Initializes a DatabaseConnector instance with default connection parameters.
         """
-        data = load_credentials()
+        if not data:
+            data = load_credentials()
         self.host = str(data['host']).strip()
         self.user = str(data['user']).strip()
         self.password = str(data['password']).strip()
         self.database = str(data['database']).strip()
         self.__connection = None
 
-    def connect(self):
+    def connect(self, show_config=True):
         """
         Establishes a connection to the MySQL database using the provided parameters.
         """
@@ -50,10 +56,16 @@ class DatabaseConnector:
                 password=self.password,
                 database=self.database
             )
-
+            return "Success!"
         except mysql.connector.Error as err:
-            QMessageBox.warning(None, "Connection Error", err.__str__(), QMessageBox.Ok)
-            sys.exit()
+
+            if show_config:
+                from config.config import Configuration
+                dialog = Configuration()
+                if dialog.exec_() != QDialog.Accepted:
+                    sys.exit()
+            else:
+                return err.__str__()
 
     def get_con(self):
         """

@@ -8,14 +8,16 @@
 | 33900 | THEORK    | Annold Casimir    |
 +-------+-----------+-------------------+
 
-Configurez les paramètres d'accès à la base de données (hôte, utilisateur, mot de passe et nom de la base de données) dans le fichier 'database_credentials.json' situé à la racine du projet sous 'ubuntu'.
--- Ces informations sont vérifiées dans le fichier 'connection.py' situé à : ubuntu\database. [à analyser en cas de problème d'authentification]
+#########################################
+Les paramètres d'accès à la base de données (hôte, utilisateur, mot de passe et nom de la base de données) sont dans un fichier 'config.json' situé à la racine du projet sous 'ubuntu'. Cette configuration sera effectuée automatiquement via une interface qui apparaîtra en cas d'absence de connexion. Cette fonctionnalité est exclusivement dédiée à l'installation.
 
-NB : Le fichier 'database_credentials.json' doit impérativement conserver ses propriétés (nom, format -> JSON), et toute modification des clés entraînera une exception !
+Ces informations sont vérifiées dans le fichier 'connection.py' situé à : ubuntu\database. [À analyser en cas de problème d'authentification]
 
-Le script complet de la base de données se trouvent dans le dossier 'scripts' situé à la racine du projet sous 'ubuntu'.
+NB : Le fichier 'config.json' doit impérativement conserver ses propriétés (nom, format -> JSON), et toute modification gauchement effectuée entraînera une exception (il est fortement déconseillé de l'éditer manuellement). En cas de suppression du fichier, le système le recréera automatiquement.
 
+Le script complet de la base de données se trouve dans le dossier 'scripts' situé à la racine du projet sous 'ubuntu'. Les requêtes (de creation de tables) seront exécutées automatiquement lors de la tentative d'établissement de la connexion (si la table existe, elle ne sera pas recréée).
 
+Note : Avant de tenter une connexion 'connect' ou de sauvegarder 'save', il est vivement recommandé de tester 'test' pour s'assurer que tout fonctionne correctement  (veuillez également préciser la base de données pour créer les tables)
 
 
 
