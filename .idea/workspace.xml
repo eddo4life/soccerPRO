@@ -6,10 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="dee1e0f1-ce63-415b-8ac7-e0689080e776" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.txt" beforeDir="false" afterPath="$PROJECT_DIR$/README.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/xparyaj_pariage.sql" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/xparyaj_pariage.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/xparyaj_parieur.sql" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/xparyaj_parieur.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
