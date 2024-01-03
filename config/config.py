@@ -104,7 +104,7 @@ class Configuration(QDialog):
         self.connect_button.clicked.connect(self.connect_to_database)
         hbox_layout.addWidget(self.connect_button)
 
-        self.cancel_button = QPushButton('Cancel')
+        self.cancel_button = QPushButton('Exit')
         self.cancel_button.clicked.connect(self.close)
         hbox_layout.addWidget(self.cancel_button)
 
@@ -174,20 +174,18 @@ class Configuration(QDialog):
         if conn.get_con():
             try:
                 with conn.get_con().cursor() as cursor:
+                    cursor.execute('DROP TABLE IF EXISTS matches;')
                     cursor.execute(self.read_sql_file(self.matches))
+                    cursor.execute('DROP TABLE IF EXISTS pariage;')
                     cursor.execute(self.read_sql_file(self.paryaj))
+                    cursor.execute('DROP TABLE IF EXISTS parieur;')
                     cursor.execute(self.read_sql_file(self.parieur))
                     conn.get_con().commit()
-                    # lauch again the app
-                    QMessageBox.information(None, "Success'", "Veuillez relancer l'application!", QMessageBox.Ok)
-                    sys.exit()
-            except Exception as err:
-                if 'already exists' in err.__str__().lower():
-                    QMessageBox.information(None, "Failed'", err.__str__() + "\nVeuillez relancer l'application!",
+                    # launch again the app
+                    QMessageBox.information(None, "Success'", "Veuillez sauvegarder et relancer l'application!",
                                             QMessageBox.Ok)
-                    sys.exit()
-                else:
-                    QMessageBox.warning(None, "Create tables 'failed'", err.__str__(), QMessageBox.Ok)
+            except Exception as err:
+                QMessageBox.warning(None, "Error", err.__str__(), QMessageBox.Ok)
             finally:
                 conn.disconnect()
         else:
