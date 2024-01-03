@@ -16,6 +16,7 @@ class Configuration(QDialog):
         self.matches = 'scripts/xparyaj_matches.sql'
         self.paryaj = 'scripts/xparyaj_pariage.sql'
         self.parieur = 'scripts/xparyaj_parieur.sql'
+        self.notice = ''
         self.init_ui()
 
     def init_ui(self):
@@ -24,7 +25,7 @@ class Configuration(QDialog):
 
         # Add tabs for Queries and Connection Fields
         tab_widget.addTab(self.create_connection_tab(), 'Connection Fields')
-        tab_widget.addTab(self.create_queries_tab(), 'Queries')
+        tab_widget.addTab(self.create_queries_tab(), 'Tables(struct)')
 
         # Set the main layout as a vertical layout containing the tab widget
         main_layout = QVBoxLayout(self)
@@ -52,6 +53,14 @@ class Configuration(QDialog):
         self.append_text(self.matches)
         self.append_text(self.paryaj)
         self.append_text(self.parieur)
+        self.notice_label = QLabel()
+        if len(self.notice) == 0:
+            self.notice_label.setText('Notice: 100% OK!')
+            self.notice_label.setStyleSheet('color:green')
+        else:
+            self.notice_label.setText('Notice : ' + self.notice + 'The application may not function correctly.')
+            self.notice_label.setStyleSheet('color:red')
+        queries_layout.addWidget(self.notice_label)
 
         return queries_tab
 
@@ -113,10 +122,10 @@ class Configuration(QDialog):
         return connection_tab
 
     def test_connection(self):
-
         conn = DatabaseConnector(self.retrieve_input_data())
-
-        self.status_label.setText(conn.connect(False))
+        text = conn.connect(False)
+        self.status_label.setStyleSheet("color: green;" if 'success' in text.lower() else "color: red;")
+        self.status_label.setText(text)
 
     def retrieve_input_data(self):
         # Get data from input fields
@@ -153,7 +162,13 @@ class Configuration(QDialog):
                 return sql_file.read().strip()
 
         except IOError as e:
-            return f"Error reading the file '{file_path}': {str(e)}"
+            QMessageBox.warning(
+                None,
+                "Error",
+                f"Failed to read the file '{file_path}': {str(e)}.\n The application may not function correctly.",
+                QMessageBox.Ok
+            )
+            self.notice += f"Failed to read the file '{file_path}': {str(e)}\n"
 
     def append_text(self, file_path):
         content = self.read_sql_file(file_path)
@@ -169,19 +184,32 @@ class Configuration(QDialog):
         self.status_label.clear()
 
     def connect_to_database(self):
+        """
+        Connects to the database using the input data retrieved by the `retrieve_input_data` method.
+
+        Raises:
+            QMessageBox: Displays an information message if the connection and table creation are successful.
+                          Displays a warning message if an error occurs during the process.
+
+        Returns:
+            None
+        """
         conn = DatabaseConnector(self.retrieve_input_data())
         conn.connect(False)
         if conn.get_con():
             try:
-                with conn.get_con().cursor() as cursor:
+                with conn.get_con().cursor(prepared=True) as cursor:
                     cursor.execute('DROP TABLE IF EXISTS matches;')
                     cursor.execute(self.read_sql_file(self.matches))
+
                     cursor.execute('DROP TABLE IF EXISTS pariage;')
                     cursor.execute(self.read_sql_file(self.paryaj))
+
                     cursor.execute('DROP TABLE IF EXISTS parieur;')
                     cursor.execute(self.read_sql_file(self.parieur))
+
                     conn.get_con().commit()
-                    # launch again the app
+                    # Launch the application again
                     QMessageBox.information(None, "Success'", "Veuillez sauvegarder et relancer l'application!",
                                             QMessageBox.Ok)
             except Exception as err:

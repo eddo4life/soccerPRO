@@ -153,6 +153,12 @@ class Matches(QWidget):
         # self.time.setEnabled(is_enabled)
         # self.country_box.setEnabled(is_enabled)
 
+    def block_cbox_signals(self, block=True):
+        self.championship_box.blockSignals(block)
+        self.home_team_box.blockSignals(block)
+        self.away_team_box.blockSignals(block)
+        self.country_box.blockSignals(block)
+
     def set_club_or_national_team_to_away_box(self):
         """
         Set the options for the away team based on the selected home team and championship.
@@ -165,9 +171,7 @@ class Matches(QWidget):
             None
         """
         # Block signals before proceeding with any update to avoid recursive calls
-        self.championship_box.blockSignals(True)
-        self.home_team_box.blockSignals(True)
-        self.away_team_box.blockSignals(True)
+        self.block_cbox_signals()
 
         # Get the selected home and away team
         selected_home_team = self.home_team_box.currentText()
@@ -194,9 +198,7 @@ class Matches(QWidget):
             self.away_team_box.setCurrentIndex(1)
 
         # Enable back the signals
-        self.championship_box.blockSignals(False)
-        self.home_team_box.blockSignals(False)
-        self.away_team_box.blockSignals(False)
+        self.block_cbox_signals(False)
 
     def analyze_status(self):
         """
@@ -282,9 +284,8 @@ class Matches(QWidget):
         """
         Slot method called when the championship selection changes.
         """
-        self.country_box.blockSignals(True)  # Disable signals temporarily
-        self.home_team_box.blockSignals(True)
-        self.away_team_box.blockSignals(True)
+        # Disable signals temporarily
+        self.block_cbox_signals()
 
         value = self.championship_box.currentText()
         if value == 'Championnat':
@@ -310,9 +311,8 @@ class Matches(QWidget):
             # country the match can be played
             self.revalidate_combobox(self.country_box, list(self.national_teams.keys()))
 
-        self.country_box.blockSignals(False)  # Re-enable signals
-        self.home_team_box.blockSignals(False)
-        self.away_team_box.blockSignals(False)
+        # Re-enable signals
+        self.block_cbox_signals(False)
 
     def save_event(self):
         """
@@ -362,6 +362,7 @@ class Matches(QWidget):
             QTableWidget: The table widget for displaying match events.
         """
         self.table = QTableWidget()
+
         self.table.clicked.connect(self.handle_table_click)
         # Set the table as not editable
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)

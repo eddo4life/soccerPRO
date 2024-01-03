@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QHBoxLayout, QDialog, QMessageBox
 
 

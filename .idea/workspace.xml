@@ -7,22 +7,12 @@
     <list default="true" id="dee1e0f1-ce63-415b-8ac7-e0689080e776" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/account/model/matchmanagementmodel.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/model/matchmanagementmodel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/model/userprofilemodel.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/model/userprofilemodel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/admin/homepage.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/admin/homepage.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/account/view/admin/match.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/admin/match.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/admin/rechargement.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/admin/rechargement.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/auth/forgotpassword.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/auth/forgotpassword.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/auth/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/auth/login.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/auth/signup.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/auth/signup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/mainwindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/mainwindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/user/card.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/card.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/user/event.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/event.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/user/history.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/history.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/user/homepage.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/homepage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/view/user/profile/userprofile.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/profile/userprofile.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/connection.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/labs/lab.py" beforeDir="false" afterPath="$PROJECT_DIR$/labs/lab.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/xparyaj_matches.sql" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

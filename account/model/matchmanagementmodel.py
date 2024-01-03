@@ -13,8 +13,26 @@ class MatchManagementModel:
         self.__equipe_visiteuse = equipe_visiteuse
         self.__equipe_receveuse = equipe_receveuse
         self.__cote = cote.replace(",", ".")
-        self.__score_final = score_final.split(':')
+        self.__score_final = MatchManagementModel.removeLeadingZeros(score_final)
         self.__etat = etat
+
+    @staticmethod
+    def removeLeadingZeros(score_str):
+        """
+        Removes leading zeros from the hour part of a time string.
+
+        Parameters:
+        - time_str (str): A time string in the format "HH:MM".
+
+        Returns:
+        - str: The formatted time string with leading zeros removed from the hour part.
+        """
+
+        # Convert the string to an integer, removing leading zeros
+        score1, score2 = map(int, score_str.split(':'))
+
+        # Format the integers back to a string without leading zeros
+        return f"{score1}:{score2}"
 
     @staticmethod
     def load():
