@@ -162,12 +162,6 @@ class Configuration(QDialog):
                 return sql_file.read().strip()
 
         except IOError as e:
-            QMessageBox.warning(
-                None,
-                "Error",
-                f"Failed to read the file '{file_path}': {str(e)}.\n The application may not function correctly.",
-                QMessageBox.Ok
-            )
             self.notice += f"Failed to read the file '{file_path}': {str(e)}\n"
 
     def append_text(self, file_path):

@@ -73,7 +73,7 @@ class Lab:
         configuration dialog from config.config.Configuration. If the configuration
         dialog is not accepted (user cancels or closes it), the program exits.
         """
-        QMessageBox.warning(None, "Table not found", msg, QMessageBox.Ok)
+        QMessageBox.warning(None, "Table or database not found ", msg, QMessageBox.Ok)
         from config.config import Configuration
         dialog = Configuration()
         if dialog.exec_() != QDialog.Accepted:
