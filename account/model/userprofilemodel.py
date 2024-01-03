@@ -193,7 +193,6 @@ class UserProfileModel:
             query = " UPDATE parieur SET etat='S' where code=%s"
             cursor.execute(query, (code,))
             conn.get_con().commit()
-            print('accoun deleted')
         except Exception as err:
             print(f"Error: {err}")
 

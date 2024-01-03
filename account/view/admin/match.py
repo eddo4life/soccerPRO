@@ -96,6 +96,7 @@ class Matches(QWidget):
         # Set up combobox currentIndexChanged events
         self.championship_box.currentIndexChanged.connect(self.selected_championship)
         self.status_box.currentIndexChanged.connect(self.analyze_status)
+        self.country_box.currentIndexChanged.connect(self.selected_country)
         self.away_team_box.currentIndexChanged.connect(self.set_club_or_national_team_to_away_box)
         self.home_team_box.currentIndexChanged.connect(self.set_club_or_national_team_to_away_box)
 
@@ -122,7 +123,7 @@ class Matches(QWidget):
         self.date.setDateTime(QDateTime.fromString(Lab.get_current_date(), Qt.ISODate))
         self.time.setTime(QTime.fromString(Lab.get_current_time(), "HH:mm"))
         # Set default text values for odds and score
-        self.cote.setText('1.2')
+        self.cote.setText('1,2')
         self.score.setText('0:0')
         self.__id_match = None  # An event without an ID is bound to save, not update.
         self.save_btn.setText('Save event')
@@ -138,8 +139,13 @@ class Matches(QWidget):
         self.home_team_box.setEnabled(is_enabled)
         self.home_team_box.setEnabled(is_enabled)
         self.away_team_box.setEnabled(is_enabled)
-        # The score should initially be 0:0 and not editable
-        self.score.setEnabled(not is_enabled)
+        # The score should initially be set to 0:0 and should not be editable.
+        # It can be changed only if the match is currently playing ('E' stands for 'In Progress').
+        self.score.setEnabled(self.status_box.currentText() == 'E')
+
+        # The odds can only be changed if the match has not started ('N' stands for 'Not Started').
+        # Once the match is in progress, the odds should not be editable.
+        self.cote.setEnabled(self.status_box.currentText() == 'N')
 
         # The date/time and country where the match is going to be played can be modified
 
@@ -312,26 +318,39 @@ class Matches(QWidget):
         """
         Save or update a match event based on the form data.
         """
-        championship = self.championship_box.currentText()
-        country = self.country_box.currentText()
-        away_team = self.away_team_box.currentText()
-        home_team = self.home_team_box.currentText()
+        # test for valid score
+        score = self.score.text().strip()
+        if Lab.validate_score_format(score):
+            championship = self.championship_box.currentText()
+            country = self.country_box.currentText()
+            away_team = self.away_team_box.currentText()
+            home_team = self.home_team_box.currentText()
 
-        etat = self.status_box.currentText()
-        date_match = Lab.get_current_date()
-        heure_match = Lab.get_current_time()
-        mmm = MatchManagementModel(self.__id_match, championship, country, date_match, heure_match, away_team,
-                                   home_team,
-                                   self.cote.text(), self.score.text(), etat)
-        if self.__id_match:
-            if etat == 'A':
-                mmm.cancel_match_and_refund()
-            elif etat == 'T':
-                mmm.refund_users_if_scores_match()
-            mmm.update()
+            etat = self.status_box.currentText()
+            date_match = Lab.get_current_date()
+            heure_match = Lab.get_current_time()
+            mmm = MatchManagementModel(self.__id_match, championship, country, date_match, heure_match, away_team,
+                                       home_team,
+                                       self.cote.text(), score, etat)
+            if self.__id_match:
+                if etat == 'A':
+                    mmm.cancel_match_and_refund()
+                elif etat == 'T':
+                    mmm.refund_users_if_scores_match()
+                mmm.update()
+            else:
+                mmm.save()
+            # clear/init the fields
+            self.clear_load()
         else:
-            mmm.save()
-        # clear/init the fields
+            QMessageBox.warning(
+                None,
+                "Format de Score Incorrect",
+                "Veuillez saisir un format de score valide. Il devrait être sous la forme '0:0' avec des chiffres et deux-points.",
+                QMessageBox.Ok
+            )
+
+    def clear_load(self):
         self.init_fields()
         self.load()
 
@@ -382,62 +401,73 @@ class Matches(QWidget):
 
         #  ["ID", "TYPE DE MATCH", "PAYS", "DATE", "HEURE", "EQUPE RECEVEUSE", "EQUIPE VISITEUSE", "COTE",
         #                   "SCORE", "ETAT"]
-        if selected_row >= 0 and self.table.item(selected_row, 9).text().lower() != 't':
-            #  enabling or disabling components
-            self.enable_components(False)
+        if selected_row >= 0:
             # retrieve the id
             id_item = self.table.item(selected_row, 0)
             self.__id_match = id_item.text()
-            type_match_item = self.table.item(selected_row, 1)
-            country_item = self.table.item(selected_row, 2)
-            date_item = self.table.item(selected_row, 3)
-            time_item = self.table.item(selected_row, 4)
-            home_team_item = self.table.item(selected_row, 5)
-            away_team_item = self.table.item(selected_row, 6)
-            cote_item = self.table.item(selected_row, 7)
-            score_item = self.table.item(selected_row, 8)
-            status_item = self.table.item(selected_row, 9)
-            # change save_btn's text from Save to Update
-            self.save_btn.setText('Update event')
+            # if the selected team status is 't' then it can only be deleted
+            if self.table.item(selected_row, 9).text().upper() != 'T':
 
-            # select the country
-            country_match = country_item.text().capitalize()
-            index = self.country_box.findText(country_match)
-            if index != -1:
-                self.country_box.setCurrentIndex(index)
+                type_match_item = self.table.item(selected_row, 1)
+                country_item = self.table.item(selected_row, 2)
+                date_item = self.table.item(selected_row, 3)
+                time_item = self.table.item(selected_row, 4)
+                home_team_item = self.table.item(selected_row, 5)
+                away_team_item = self.table.item(selected_row, 6)
+                cote_item = self.table.item(selected_row, 7)
+                score_item = self.table.item(selected_row, 8)
+                status_item = self.table.item(selected_row, 9)
+                # change save_btn's text from Save to Update
+                self.save_btn.setText('Update event')
 
-            # select the championship
-            type_match = type_match_item.text().capitalize()
-            index = self.championship_box.findText(type_match)
-            if index != -1:
-                self.championship_box.setCurrentIndex(index)
+                # select the country
+                country_match = country_item.text().capitalize()
+                index = self.country_box.findText(country_match)
+                if index != -1:
+                    self.country_box.setCurrentIndex(index)
 
-            # home_team
-            home_team = home_team_item.text().capitalize()
-            index = self.home_team_box.findText(home_team)
-            if index != -1:
-                self.home_team_box.setCurrentIndex(index)
+                # select the championship
+                type_match = type_match_item.text().capitalize()
+                index = self.championship_box.findText(type_match)
+                if index != -1:
+                    self.championship_box.setCurrentIndex(index)
 
-            # away_team
-            away_team = away_team_item.text().capitalize()
-            index = self.away_team_box.findText(away_team)
-            if index != -1:
-                self.away_team_box.setCurrentIndex(index)
+                # home_team
+                home_team = home_team_item.text().capitalize()
+                index = self.home_team_box.findText(home_team)
+                if index != -1:
+                    self.home_team_box.setCurrentIndex(index)
 
-            # date
-            self.date.setDateTime(QDateTime.fromString(date_item.text(), Qt.ISODate))
-            # time
-            # to handle both 0-9 and 10-24hr format
-            self.time.setTime(QTime.fromString(time_item.text(), "HH:mm:ss"))
-            self.time.setTime(QTime.fromString(time_item.text(), "H:mm:ss"))
-            # cote
-            self.cote.setText(cote_item.text())
-            # score
-            self.score.setText(score_item.text())
-            # status
-            self.status = status_item.text().upper()
-            index = self.status_box.findText(self.status)
-            if index != -1:
-                self.status_box.blockSignals(True)
-                self.status_box.setCurrentIndex(index)
-                self.status_box.blockSignals(False)
+                # away_team
+                away_team = away_team_item.text().capitalize()
+                index = self.away_team_box.findText(away_team)
+                if index != -1:
+                    self.away_team_box.setCurrentIndex(index)
+
+                # date
+                self.date.setDateTime(QDateTime.fromString(date_item.text(), Qt.ISODate))
+                # time
+                # to handle both 0-9 and 10-24hr format
+                self.time.setTime(QTime.fromString(time_item.text(), "HH:mm:ss"))
+                self.time.setTime(QTime.fromString(time_item.text(), "H:mm:ss"))
+                # cote
+                self.cote.setText(cote_item.text())
+                # score
+                self.score.setText(score_item.text())
+                # status
+                self.status = status_item.text().upper()
+                index = self.status_box.findText(self.status)
+                if index != -1:
+                    self.status_box.blockSignals(True)
+                    self.status_box.setCurrentIndex(index)
+                    self.status_box.blockSignals(False)
+
+                #  enabling or disabling components
+                self.enable_components(False)
+
+            else:
+                if Lab.show_confirm_dialog('Confirmation de suppression',
+                                           'Les événements supprimés ne pourront pas être restaurés. Voulez-vous continuer?'):
+                    MatchManagementModel.delete(self.__id_match)
+                    # revalidate the data
+                    self.clear_load()

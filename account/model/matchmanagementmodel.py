@@ -13,7 +13,7 @@ class MatchManagementModel:
         self.__equipe_visiteuse = equipe_visiteuse
         self.__equipe_receveuse = equipe_receveuse
         self.__cote = cote.replace(",", ".")
-        self.__score_final = score_final
+        self.__score_final = score_final.split(':')
         self.__etat = etat
 
     @staticmethod
@@ -49,6 +49,21 @@ class MatchManagementModel:
         except Exception as err:
             print(f"Error: {err}")
 
+        finally:
+            conn.disconnect()
+
+    @staticmethod
+    def delete(id_match):
+        conn = DatabaseConnector()
+        conn.connect()
+        cursor = conn.get_con().cursor(prepared=True)
+        try:
+            query = "UPDATE matches SET etat='S' WHERE id=%s"
+
+            cursor.execute(query, (id_match,))
+            conn.get_con().commit()
+        except Exception as err:
+            print(f"Error: {err}")
         finally:
             conn.disconnect()
 

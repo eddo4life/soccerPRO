@@ -1,3 +1,4 @@
+import re
 import sys
 import uuid
 from datetime import datetime
@@ -23,6 +24,21 @@ class Lab:
         return unique_id
 
     @staticmethod
+    def validate_score_format(input_string):
+        """
+        Validates the format of a score input string.
+
+        Args:
+            input_string (str): The input string representing the score in the format 'mm:ss',
+                               where mm is minutes (1 or 2 digits) and ss is seconds (1 or 2 digits).
+
+        Returns:
+            bool: True if the input string has a valid score format, False otherwise.
+        """
+        pattern = r'^(\d{1,2}:\d{1,2})$'
+        return bool(re.match(pattern, input_string))
+
+    @staticmethod
     def get_flattened_values(input_dict):
         """
         Takes a dictionary of lists and returns the combined values of all the lists.
@@ -44,6 +60,19 @@ class Lab:
 
     @staticmethod
     def invoke_config(msg):
+        """
+        Displays a warning message and invokes the configuration dialog.
+
+        Args:
+            msg (str): The warning message to be displayed.
+
+        Returns:
+            None
+
+        The function displays a warning message using QMessageBox and then opens the
+        configuration dialog from config.config.Configuration. If the configuration
+        dialog is not accepted (user cancels or closes it), the program exits.
+        """
         QMessageBox.warning(None, "Table not found", msg, QMessageBox.Ok)
         from config.config import Configuration
         dialog = Configuration()
@@ -100,6 +129,26 @@ class Lab:
             QIcon: The loaded icon.
         """
         return QIcon("icon/" + name)
+
+    @staticmethod
+    def show_confirm_dialog(title, msg):
+        """
+        Display a confirmation dialog with the specified title and message.
+
+        Parameters:
+        - title (str): The title of the confirmation dialog.
+        - msg (str): The message to be displayed in the confirmation dialog.
+
+        Returns:
+        bool: True if the user clicks 'Yes,' False otherwise.
+        """
+        confirm_box = QMessageBox()
+        confirm_box.setWindowTitle(title)
+        confirm_box.setIcon(QMessageBox.Question)
+        confirm_box.setText(msg)
+        confirm_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+        return confirm_box.exec_() == QMessageBox.Yes
 
     @staticmethod
     def get_logout_btn_style():
