@@ -15,7 +15,7 @@ Ces informations sont vérifiées dans le fichier 'connection.py' situé à : ub
 
 NB : Le fichier 'config.json' doit impérativement conserver ses propriétés (nom, format -> JSON), et toute modification gauchement effectuée entraînera une exception [perte de connection] (il est fortement déconseillé de l'éditer manuellement). En cas de suppression ou de corruption du fichier, le système le recréera automatiquement.
 
-Le script complet de la base de données se trouve dans le dossier 'scripts' situé à la racine du projet sous 'ubuntu'. Les requêtes (de creation de tables) seront exécutées automatiquement lors de la tentative d'établissement de la connexion (si la table existe, elle ne sera pas recréée).
+Le script complet de la base de données se trouve dans le dossier 'scripts' situé à la racine du projet sous 'ubuntu'. Les requêtes (de creation de tables) seront exécutées automatiquement lors de la tentative d'établissement de la connexion (si la table existe, elle sera recréée).
 
 Note : Avant de tenter une connexion 'connect' ou de sauvegarder 'save', il est vivement recommandé de tester 'test' pour s'assurer que tout fonctionne correctement  (veuillez également préciser la base de données pour créer les tables)
 
