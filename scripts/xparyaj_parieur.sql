@@ -9,7 +9,7 @@ CREATE TABLE `parieur` (
   `username` varchar(255) NOT NULL,
   `mot_de_passe` varchar(255) NOT NULL,
   `solde` float NOT NULL DEFAULT '0',
-  `etat` char(1) NOT NULL DEFAULT 'a',
+  `etat` char(1) NOT NULL DEFAULT 'A',
   PRIMARY KEY (`code`),
   UNIQUE KEY `telephone` (`telephone`),
   UNIQUE KEY `nif_cin` (`nif_cin`),

@@ -28,7 +28,6 @@ class Matches(QWidget):
         self.national_teams_list = list(self.national_teams.keys())
         self.clubs_list = Lab.get_flattened_values(self.clubs)
 
-
         # Initialize the form
         self.init_form()
 
@@ -46,11 +45,13 @@ class Matches(QWidget):
         self.away_team_box = QComboBox()
         self.status_box = QComboBox()
 
-        # Date and time input fields
-        self.layout.addWidget(QLabel("Pays"))
-        self.layout.addWidget(self.country_box)
+        # championship and country boxes
         self.layout.addWidget(QLabel("Championat"))
         self.layout.addWidget(self.championship_box)
+        self.layout.addWidget(QLabel("Pays"))
+        self.layout.addWidget(self.country_box)
+
+        # Date and time input fields
         self.layout.addWidget(QLabel("Date"))
         self.date = QDateEdit()
         self.layout.addWidget(self.date)
@@ -242,7 +243,7 @@ class Matches(QWidget):
                 # Select back the previous status in the GUI element (status_box)
                 self.select_text(self.status_box, previous_status)
         elif current_status == 'T':
-            # Check if the previous status was 'E' (Encours)
+            # Check if the previous status wasn't 'E' (Encours)
             if previous_status != 'E':
                 # Show an information message to inform the user that the action is not allowed
                 QMessageBox.information(None, "Action refusée",
@@ -269,6 +270,7 @@ class Matches(QWidget):
         current index of the ComboBox to that index, effectively selecting the specified text.
         If the text is not found in the ComboBox, no selection is made.
         """
+
         index = box.findText(text)
         if index != -1:
             box.setCurrentIndex(index)
@@ -306,7 +308,7 @@ class Matches(QWidget):
             self.revalidate_combobox(self.home_team_box, self.clubs[country])
             self.revalidate_combobox(self.away_team_box, self.clubs[country][::-1])
         except Exception as e:
-            print('Error', str(e))
+            print('Error at admin/match:revalidate_clubs_base_on_selected_country:', str(e))
 
     def selected_championship(self):
         """
@@ -424,7 +426,7 @@ class Matches(QWidget):
     def handle_table_click(self, item):
         """
         Handle the click event on the table. Populate form fields based on the selected row.
-
+        ATTENTION: The order of retrieving these informations are important!
         Args:
             item (QTableWidgetItem): The selected item in the table.
         """
@@ -438,8 +440,6 @@ class Matches(QWidget):
             self.__id_match = id_item.text()
             # if the selected team status is 't' then it can only be deleted
             if self.table.item(selected_row, 9).text().upper() != 'T':
-                # block the signal
-                self.block_cbox_signals()
                 type_match_item = self.table.item(selected_row, 1)
                 country_item = self.table.item(selected_row, 2)
                 date_item = self.table.item(selected_row, 3)
@@ -452,17 +452,15 @@ class Matches(QWidget):
                 # change save_btn's text from Save to Update
                 self.save_btn.setText('Update event')
 
-                # select the country
-                self.select_text(self.country_box, country_item.text().capitalize())
-
                 # select the championship
-                self.select_text(self.championship_box, type_match_item.text().capitalize())
+                self.select_text(self.championship_box, type_match_item.text())
 
+                # select the country
+                self.select_text(self.country_box, country_item.text())
                 # home_team
-                self.select_text(self.home_team_box, home_team_item.text().capitalize())
-
+                self.select_text(self.home_team_box, home_team_item.text())
                 # away_team
-                self.select_text(self.away_team_box, away_team_item.text().capitalize())
+                self.select_text(self.away_team_box, away_team_item.text())
 
                 # date
                 self.date.setDateTime(QDateTime.fromString(date_item.text(), Qt.ISODate))
@@ -480,8 +478,6 @@ class Matches(QWidget):
 
                 #  enabling or disabling components
                 self.enable_components(False)
-                # enable the signal
-                self.block_cbox_signals(False)
             else:
                 if Lab.show_confirm_dialog('Confirmation de suppression',
                                            'Les événements supprimés ne pourront pas être restaurés. Voulez-vous continuer?'):

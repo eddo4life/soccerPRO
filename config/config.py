@@ -211,4 +211,4 @@ class Configuration(QDialog):
             finally:
                 conn.disconnect()
         else:
-            self.status_label.setText('Veuillez vous connecter a une base!')
+            self.status_label.setText('Veuillez vous connecter à une base!')
