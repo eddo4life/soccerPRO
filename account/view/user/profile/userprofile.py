@@ -1,4 +1,5 @@
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QWidget, QFormLayout, QLineEdit, QComboBox, QTextEdit, QHBoxLayout, QPushButton, QLabel, \
     QVBoxLayout, QFrame, QCheckBox, QMessageBox
 
@@ -117,9 +118,11 @@ class UserProfile(QWidget):
         self.first_name_input = QLineEdit()
         self.sex_combobox = QComboBox()
         self.telephone_input = QLineEdit()
+        self.telephone_input.setValidator(QIntValidator())
         self.address_input = QTextEdit()
         self.address_input.setFixedHeight(200)
         self.nif_cin_input = QLineEdit()
+        self.nif_cin_input.setValidator(QIntValidator())
         self.password_input = QLineEdit()
         self.new_password_input = QLineEdit()
         self.confirm_new_password_input = QLineEdit()
@@ -182,6 +185,13 @@ class UserProfile(QWidget):
         """
         self.home.home()
 
+    def reset_password_section(self):
+        self.confirm_new_password_input.setText('')
+        self.new_password_input.setText('')
+        self.password_input.setText('')
+        self.password_check_box.setChecked(False)
+        self.password_enablings(False)
+
     def retrieve_values(self):
         """
         Retrieves and processes user input values.
@@ -203,32 +213,49 @@ class UserProfile(QWidget):
         tests_passed = True
 
         if self.password_check_box.isChecked():
+            # test if the given password is correct
             if UserProfile.user_password == password:
-                if new_password == confirm_new_password:
-                    UserProfile.user_password = new_password
-                    self.confirm_new_password_input.setText('')
-                    self.new_password_input.setText('')
-                    self.password_input.setText('')
-                    self.password_check_box.setChecked(False)
-                    self.password_enablings(False)
-                else:
+                # test if the new password was properly confirmed
+                if new_password != confirm_new_password or len(confirm_new_password.strip()) == 0:
                     tests_passed = False
-                    QMessageBox.warning(None, "Denied", 'Veuillez saisir deux mots de passe identiques!',
+                    QMessageBox.warning(None, "Denied", 'Veuillez saisir deux mots de passe identiques et non nulls!',
                                         QMessageBox.Ok)
             else:
                 tests_passed = False
                 QMessageBox.warning(None, "Denied", 'Mot de passe incorrecte!', QMessageBox.Ok)
-
+        else:
+            # if the password section is not concerned we assign back the current password to the new one
+            new_password = UserProfile.user_password
         if tests_passed:
             UserProfile.user_name = username
             upm = UserProfileModel(account_id=UserProfile.account_id, username=UserProfile.user_name, name=name,
                                    sex=sex,
                                    first_name=first_name,
                                    address=address, telephone=telephone, nif_cin=nif_cin,
-                                   password=UserProfile.user_password,
+                                   password=new_password,
                                    status=UserProfile.user_status[0].upper())
-            upm.update()
-            self.update_values()
+
+            error_message = upm.update()
+            if not error_message:
+                # reset the password fields and disable the password checkbx
+                if self.password_check_box.isChecked():
+                    UserProfile.user_password = new_password
+                    self.reset_password_section()
+                self.update_values()
+            else:
+                # Handle specific error cases
+                if "Duplicate entry" in error_message:
+                    if "parieur.telephone" in error_message:
+                        error_message = "Le numéro de téléphone est déjà en cours d'utilisation."
+                    elif "parieur.nif_cin" in error_message:
+                        error_message = "Le NIF/CIN est déjà en cours d'utilisation."
+                    elif "parieur.username" in error_message:
+                        error_message = "Le nom d'utilisateur est déjà pris."
+                    else:
+                        error_message = "Une erreur inattendue s'est produite : " + error_message
+
+                # Display a warning message with the appropriate error details
+                QMessageBox.warning(None, "Denied", error_message, QMessageBox.Ok)
 
     def save(self):
         """
@@ -294,10 +321,10 @@ class UserProfile(QWidget):
             The corresponding human-readable status.
         """
         if stat:
-            stat = stat.lower()
-            if stat == 'a':
+            stat = stat.upper()
+            if stat == 'A':
                 return 'Actif'
-            elif stat == 'f':
+            elif stat == 'F':
                 return 'Fermer'
 
     def update_status(self):
