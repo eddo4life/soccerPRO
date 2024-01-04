@@ -75,7 +75,7 @@ class HistoryCardModel(BetCardModel):
         Returns:
             str: The status.
         """
-        return self.__get_status(self.__status)
+        return self.__get_status(self.__status.upper())  # safely
 
     @staticmethod
     def __get_status(stat):
@@ -88,11 +88,12 @@ class HistoryCardModel(BetCardModel):
         Returns:
             str: The human-readable status.
         """
-        if stat == 'n':
+        if stat == 'N':
             return 'Non Encore Joué'
-        elif stat == 'e':
+        elif stat == 'E':
             return 'Encours'
-        elif stat == 't':
+        elif stat == 'T':
             return 'Terminé'
-        elif stat == 't':
+        elif stat == 'A':
             return 'Annulé'
+        return 'Undefined'

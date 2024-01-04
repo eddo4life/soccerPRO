@@ -32,7 +32,7 @@ class UserEventModel:
         """
         query = """
             SELECT * FROM pariage JOIN matches ON pariage.id_match = matches.id 
-            WHERE (matches.etat = 'e' OR matches.etat = 'n') AND pariage.id_compte=%s;
+            WHERE (matches.etat = 'E' OR matches.etat = 'N') AND pariage.id_compte=%s;
         """
         return UserEventModel.load(query)
 
@@ -46,7 +46,7 @@ class UserEventModel:
         """
         query = """
             SELECT * FROM pariage JOIN matches ON pariage.id_match = matches.id 
-            WHERE matches.etat = 't' AND matches.score_final = pariage.score_prevu AND pariage.id_compte=%s;
+            WHERE matches.etat = 'T' AND matches.score_final = pariage.score_prevu AND pariage.id_compte=%s;
         """
         return UserEventModel.load(query)
 
@@ -60,7 +60,7 @@ class UserEventModel:
         """
         query = """
             SELECT * FROM pariage JOIN matches ON pariage.id_match = matches.id 
-            WHERE matches.etat = 't' AND matches.score_final != pariage.score_prevu AND pariage.id_compte=%s;
+            WHERE matches.etat = 'T' AND matches.score_final != pariage.score_prevu AND pariage.id_compte=%s;
         """
         return UserEventModel.load(query)
 
@@ -77,7 +77,7 @@ class UserEventModel:
         """
         query_not_null = query  # Make sure the query is not null
         if not query:
-            query = "SELECT * FROM matches WHERE etat='n' "
+            query = "SELECT * FROM matches WHERE etat='N' "
 
         conn = DatabaseConnector()
         conn.connect()

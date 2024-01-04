@@ -4,7 +4,7 @@ from labs.lab import Lab
 
 class UserProfileModel:
     def __init__(self, account_id=None, username=None, name=None, sex=None, first_name=None,
-                 address=None, telephone=None, nif_cin=None, password=None, status=None):
+                 address=None, telephone=None, nif_cin=None, password=None, status='A'):
         self.__account_id = account_id
         self.__username = username
         self.__name = name
