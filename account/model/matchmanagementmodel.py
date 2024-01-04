@@ -41,7 +41,7 @@ class MatchManagementModel:
         data = []
         try:
             with conn.get_con().cursor() as cursor:
-                cursor.execute("SELECT * FROM Matches WHERE etat!='s'")
+                cursor.execute("SELECT * FROM matches WHERE etat!='s'")
                 data = cursor.fetchall()
         except Exception as e:
             # Handle the case when the table is not found (improve exception handling later).

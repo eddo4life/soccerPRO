@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QHBoxLayout, QDialog, QMessageBox
 
 
@@ -157,3 +157,31 @@ class Lab:
                 color: red;
             }
             '''
+
+    @staticmethod
+    def apply_table_style(table):
+        stylesheet = """
+        QTableWidget {
+            border: 1px solid black;
+            gridline-color: #555;
+            background-color: #f0f0f0;
+        }
+
+        QTableWidget::item {
+            padding: 5px;
+            border: 1px solid #ccc;
+        }
+
+        QTableWidget::item:selected {
+            background-color: #99c5ff;
+        }
+
+        /* Header styling */
+        QHeaderView::section {
+            background-color: #eee;
+            padding: 5px;
+            border: 1px solid #ccc;
+            font-weight: bold;
+        }
+        """
+        table.setStyleSheet(stylesheet)

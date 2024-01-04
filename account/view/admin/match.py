@@ -27,8 +27,7 @@ class Matches(QWidget):
         # retrieve values from dict to list
         self.national_teams_list = list(self.national_teams.keys())
         self.clubs_list = Lab.get_flattened_values(self.clubs)
-        # Initialize the status state
-        self.status = self.status_list[0]
+
 
         # Initialize the form
         self.init_form()
@@ -115,6 +114,8 @@ class Matches(QWidget):
         """
         Initialize the form fields to default values.
         """
+        # Initialize the status state
+        self.status = self.status_list[0]
         # Initialize match status combo box
         self.revalidate_combobox(self.status_box, self.status_list)
         # Initialize championship, which will automatically initialize other fields due to the connected signal
@@ -158,6 +159,7 @@ class Matches(QWidget):
         self.home_team_box.blockSignals(block)
         self.away_team_box.blockSignals(block)
         self.country_box.blockSignals(block)
+        self.status_box.blockSignals(block)
 
     def set_club_or_national_team_to_away_box(self):
         """
@@ -216,10 +218,11 @@ class Matches(QWidget):
         Returns:
             None
         """
+        # block the status signal before any change
+        self.block_cbox_signals()
         # Get the previous and current status
         previous_status = self.status
         current_status = self.status_box.currentText()
-
         # Check if the current status is 'S' (Supprimer)
         if current_status == 'S':
             # Check if the previous status was 'E' (Encours) or 'N' (Non Encore Joue)
@@ -227,11 +230,8 @@ class Matches(QWidget):
                 # Show an information message to inform the user that deletion is not allowed
                 QMessageBox.information(None, "Suppression refusée",
                                         "Vous pouvez supprimer un événement soit terminé soit annulé.", QMessageBox.Ok)
-
                 # Select back the previous status in the GUI element (status_box)
-                index = self.status_box.findText(previous_status)
-                if index != -1:
-                    self.status_box.setCurrentIndex(index)
+                self.select_text(self.status_box, previous_status)
         elif current_status == 'N':
             # Check if the previous status was 'E' (Encours)
             if previous_status == 'E':
@@ -239,11 +239,39 @@ class Matches(QWidget):
                 QMessageBox.information(None, "Action refusée",
                                         "Vous pouvez mettre en mode (non encore joué) un événement qui a été déjà commencé.",
                                         QMessageBox.Ok)
+                # Select back the previous status in the GUI element (status_box)
+                self.select_text(self.status_box, previous_status)
+        elif current_status == 'T':
+            # Check if the previous status was 'E' (Encours)
+            if previous_status != 'E':
+                # Show an information message to inform the user that the action is not allowed
+                QMessageBox.information(None, "Action refusée",
+                                        "Vous ne pouvez terminer q'un événement qui est en cours.",
+                                        QMessageBox.Ok)
 
                 # Select back the previous status in the GUI element (status_box)
-                index = self.status_box.findText(previous_status)
-                if index != -1:
-                    self.status_box.setCurrentIndex(index)
+                self.select_text(self.status_box, previous_status)
+        # enable back the signal
+        self.block_cbox_signals(False)
+
+    def select_text(self, box, text):
+        """
+        Selects the specified text in a Qt ComboBox.
+
+        Parameters:
+        - box (QComboBox): The Qt ComboBox widget in which to select the text.
+        - text (str): The text to be selected in the ComboBox.
+
+        Returns:
+        None
+
+        This method finds the index of the specified text in the ComboBox and sets the
+        current index of the ComboBox to that index, effectively selecting the specified text.
+        If the text is not found in the ComboBox, no selection is made.
+        """
+        index = box.findText(text)
+        if index != -1:
+            box.setCurrentIndex(index)
 
     def revalidate_combobox(self, combobox, datas):
         """
@@ -321,12 +349,14 @@ class Matches(QWidget):
         # test for valid score
         score = self.score.text().strip()
         if Lab.validate_score_format(score):
+            self.block_cbox_signals()
             championship = self.championship_box.currentText()
             country = self.country_box.currentText()
             away_team = self.away_team_box.currentText()
             home_team = self.home_team_box.currentText()
-
             etat = self.status_box.currentText()
+            self.block_cbox_signals(False)
+
             date_match = Lab.get_current_date()
             heure_match = Lab.get_current_time()
             mmm = MatchManagementModel(self.__id_match, championship, country, date_match, heure_match, away_team,
@@ -362,7 +392,7 @@ class Matches(QWidget):
             QTableWidget: The table widget for displaying match events.
         """
         self.table = QTableWidget()
-
+        Lab.apply_table_style(self.table)
         self.table.clicked.connect(self.handle_table_click)
         # Set the table as not editable
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -408,7 +438,8 @@ class Matches(QWidget):
             self.__id_match = id_item.text()
             # if the selected team status is 't' then it can only be deleted
             if self.table.item(selected_row, 9).text().upper() != 'T':
-
+                # block the signal
+                self.block_cbox_signals()
                 type_match_item = self.table.item(selected_row, 1)
                 country_item = self.table.item(selected_row, 2)
                 date_item = self.table.item(selected_row, 3)
@@ -422,28 +453,16 @@ class Matches(QWidget):
                 self.save_btn.setText('Update event')
 
                 # select the country
-                country_match = country_item.text().capitalize()
-                index = self.country_box.findText(country_match)
-                if index != -1:
-                    self.country_box.setCurrentIndex(index)
+                self.select_text(self.country_box, country_item.text().capitalize())
 
                 # select the championship
-                type_match = type_match_item.text().capitalize()
-                index = self.championship_box.findText(type_match)
-                if index != -1:
-                    self.championship_box.setCurrentIndex(index)
+                self.select_text(self.championship_box, type_match_item.text().capitalize())
 
                 # home_team
-                home_team = home_team_item.text().capitalize()
-                index = self.home_team_box.findText(home_team)
-                if index != -1:
-                    self.home_team_box.setCurrentIndex(index)
+                self.select_text(self.home_team_box, home_team_item.text().capitalize())
 
                 # away_team
-                away_team = away_team_item.text().capitalize()
-                index = self.away_team_box.findText(away_team)
-                if index != -1:
-                    self.away_team_box.setCurrentIndex(index)
+                self.select_text(self.away_team_box, away_team_item.text().capitalize())
 
                 # date
                 self.date.setDateTime(QDateTime.fromString(date_item.text(), Qt.ISODate))
@@ -457,15 +476,12 @@ class Matches(QWidget):
                 self.score.setText(score_item.text())
                 # status
                 self.status = status_item.text().upper()
-                index = self.status_box.findText(self.status)
-                if index != -1:
-                    self.status_box.blockSignals(True)
-                    self.status_box.setCurrentIndex(index)
-                    self.status_box.blockSignals(False)
+                self.select_text(self.status_box, self.status)
 
                 #  enabling or disabling components
                 self.enable_components(False)
-
+                # enable the signal
+                self.block_cbox_signals(False)
             else:
                 if Lab.show_confirm_dialog('Confirmation de suppression',
                                            'Les événements supprimés ne pourront pas être restaurés. Voulez-vous continuer?'):
