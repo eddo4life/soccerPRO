@@ -97,7 +97,6 @@ class Matches(QWidget):
         self.championship_box.currentIndexChanged.connect(self.selected_championship)
         self.status_box.currentIndexChanged.connect(self.analyze_status)
         self.country_box.currentIndexChanged.connect(self.selected_country)
-        self.away_team_box.currentIndexChanged.connect(self.set_club_or_national_team_to_away_box)
         self.home_team_box.currentIndexChanged.connect(self.set_club_or_national_team_to_away_box)
 
         # Main layout
@@ -139,7 +138,6 @@ class Matches(QWidget):
         """
         self.championship_box.setEnabled(is_enabled)
         self.home_team_box.setEnabled(is_enabled)
-        self.home_team_box.setEnabled(is_enabled)
         self.away_team_box.setEnabled(is_enabled)
         # The score should initially be set to 0:0 and should not be editable.
         # It can be changed only if the match is currently playing ('E' stands for 'In Progress').
@@ -158,7 +156,6 @@ class Matches(QWidget):
     def block_cbox_signals(self, block=True):
         self.championship_box.blockSignals(block)
         self.home_team_box.blockSignals(block)
-        self.away_team_box.blockSignals(block)
         self.country_box.blockSignals(block)
         self.status_box.blockSignals(block)
 
