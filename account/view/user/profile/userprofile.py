@@ -117,6 +117,7 @@ class UserProfile(QWidget):
         self.name_input = QLineEdit()
         self.first_name_input = QLineEdit()
         self.sex_combobox = QComboBox()
+        self.sex_combobox.addItems(["M", "F"])
         self.telephone_input = QLineEdit()
         self.telephone_input.setValidator(QIntValidator())
         self.address_input = QTextEdit()
@@ -287,7 +288,7 @@ class UserProfile(QWidget):
         self.name_input.setText(self.upm.get_name())
         self.first_name_input.setText(self.upm.get_first_name())
 
-        self.sex_combobox.addItems(["M", "F"])
+
         current_sex = self.upm.get_sex()
         if current_sex in ["M", "F"]:
             index = self.sex_combobox.findText(current_sex)

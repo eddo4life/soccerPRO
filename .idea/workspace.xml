@@ -7,6 +7,8 @@
     <list default="true" id="dee1e0f1-ce63-415b-8ac7-e0689080e776" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/account/view/admin/match.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/admin/match.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/account/view/auth/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/auth/login.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/account/view/user/profile/userprofile.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/view/user/profile/userprofile.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

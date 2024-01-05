@@ -129,13 +129,16 @@ class Matches(QWidget):
         self.__id_match = None  # An event without an ID is bound to save, not update.
         self.save_btn.setText('Save event')
         # Enable or disable components based on the provided parameter
-        self.enable_components()
+        self.enable_components(True)
 
-    def enable_components(self, is_enabled=True):
+    def enable_components(self, is_enabled):
         """
         Enable or disable UI components based on the provided parameter.
         all access are granted if saving, but not for updating
         """
+        # safely block signals before any manipulation
+        self.block_cbox_signals()
+
         self.championship_box.setEnabled(is_enabled)
         self.home_team_box.setEnabled(is_enabled)
         self.away_team_box.setEnabled(is_enabled)
@@ -145,14 +148,15 @@ class Matches(QWidget):
 
         # The odds can only be changed if the match has not started ('N' stands for 'Not Started').
         # Once the match is in progress, the odds should not be editable.
-        self.cote.setEnabled(self.status_box.currentText() == 'N')
+        self.cote.setEnabled(is_enabled)
 
-        # The date/time and country where the match is going to be played can be modified
-
-        # self.date.setEnabled(is_enabled)
-        # self.time.setEnabled(is_enabled)
-        # self.country_box.setEnabled(is_enabled)
-
+        # If the event is not in progress, the country, date, and time for the match can be changed.
+        event_is_not_in_progress = self.status_box.currentText() != 'E'
+        self.date.setEnabled(event_is_not_in_progress)
+        self.time.setEnabled(event_is_not_in_progress)
+        # But...the country can not be changed if we're playing championship [Liga, Ligue 1, premiere league etc.]
+        self.country_box.setEnabled(event_is_not_in_progress and self.championship_box.currentText() != 'Championnat')
+        self.block_cbox_signals(False)
     def block_cbox_signals(self, block=True):
         self.championship_box.blockSignals(block)
         self.home_team_box.blockSignals(block)
@@ -473,8 +477,8 @@ class Matches(QWidget):
                 self.status = status_item.text().upper()
                 self.select_text(self.status_box, self.status)
 
-                #  enabling or disabling components
-                self.enable_components(False)
+                #  enabling fields that can be updated if the event is canceled
+                self.enable_components(self.status_box.currentText() == 'A')
             else:
                 if Lab.show_confirm_dialog('Confirmation de suppression',
                                            'Les événements supprimés ne pourront pas être restaurés. Voulez-vous continuer?'):
