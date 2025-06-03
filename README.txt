@@ -1,14 +1,3 @@
-+==========UBUNTU:Participants==========+
-+-------+-----------+-------------------+
-| code  | nom       | prenom            |
-+-------+-----------+-------------------+
-| 33569 | THEODORIS | Boaz Eddy Cadet   |
-| 33190 | ROJOUR    | Dariancy Develyne |
-| 33648 | JEAN      | Somara Maillekar  |
-| 33900 | THEORK    | Annold Casimir    |
-+-------+-----------+-------------------+
-
-#########################################
 
 1) Paramètre de connexion
 
@@ -28,4 +17,4 @@ Note : Avant de tenter une connexion 'connect' ou de sauvegarder 'save', il est 
 
 
 
-@UBUNTU
+@SoccerPRO
